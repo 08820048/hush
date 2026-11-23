@@ -9,7 +9,12 @@ Notable changes to Hush. Format based on Keep a Changelog; versions follow Seman
 - 许可证由 MIT 改为 [GPL-3.0-or-later](LICENSE):分发修改版必须同样开源。v0.1.0 与 v0.2.0 仍按 MIT 提供。
   License changed from MIT to GPL-3.0-or-later. Releases 0.1.0 and 0.2.0 remain available under MIT.
 
+### 注意 · Note
+- Bundle ID 由占位的 `dev.hushapp.Hush` 改为 `fyi.hushpass.Hush`。macOS 会把它当作新 App,从 v0.2.0 升级后设置、预设和快捷键需要重新设置一次。
+  The bundle ID changed to `fyi.hushpass.Hush`; settings, presets and shortcuts from 0.2.0 do not carry over.
+
 ### 新增 · Added
+- Mac App Store 版构建配置(无直接粘贴与检查更新)、隐私政策页。Mac App Store build configuration and privacy policy.
 - 产品官网(`website/`,部署在 Cloudflare Pages)。Product website.
 - 贡献指南、行为准则、Issue 与 PR 模板。Contributing guide, code of conduct, issue and PR templates.
 

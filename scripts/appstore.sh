@@ -2,8 +2,8 @@
 # Archives the Mac App Store build ("Hush App Store" scheme, AppStore configuration: no direct
 # paste, no update check) and exports a signed package for App Store Connect.
 #
-#   TEAM_ID=ABCDE12345 BUNDLE_ID=fyi.hushpass.Hush scripts/appstore.sh        # → dist/appstore/Hush.pkg
-#   TEAM_ID=… BUNDLE_ID=… UPLOAD=1 scripts/appstore.sh                        # export and upload
+#   TEAM_ID=ABCDE12345 scripts/appstore.sh             # → dist/appstore/Hush.pkg
+#   TEAM_ID=ABCDE12345 UPLOAD=1 scripts/appstore.sh    # export and upload
 #
 # Needs an Apple Developer Program membership, Xcode signed in to that account (Settings ›
 # Accounts), and the app record created in App Store Connect with the same bundle ID.
@@ -12,7 +12,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 : "${TEAM_ID:?set TEAM_ID to your 10-character Apple Developer Team ID}"
-: "${BUNDLE_ID:?set BUNDLE_ID to the bundle ID registered in App Store Connect, e.g. fyi.hushpass.Hush}"
+BUNDLE_ID=${BUNDLE_ID:-fyi.hushpass.Hush}
 VERSION=$(awk '/^    MARKETING_VERSION:/ {print $2; exit}' App/project.yml)
 BUILD_NUMBER=${BUILD_NUMBER:-$(date +%Y%m%d%H%M)}
 OUT=dist/appstore

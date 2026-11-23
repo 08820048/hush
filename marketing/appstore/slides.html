@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Five 1440×900 slides stacked vertically; the script crops them apart at 2×. */
+  body { background: var(--ground); }
+  .slide { position: relative; width: 1440px; height: 900px; overflow: hidden; background: var(--ground); display: grid; grid-template-columns: 470px 1fr; align-items: center; gap: 64px; padding: 0 88px; }
+  .slide .brand { position: absolute; left: 88px; top: 56px; display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+  .slide .brand img { width: 30px; height: 30px; }
+  .slide h2 { font-size: 54px; font-weight: 500; line-height: 1.14; letter-spacing: -.025em; }
+  .slide p.sub { margin-top: 24px; font-size: 20px; line-height: 1.6; color: var(--muted); }
+  .slide .visual { position: relative; display: flex; justify-content: center; }
+  .slide .hero-visual { padding-top: 52px; }
+  .slide .menubar-full { position: absolute; left: 0; right: 0; top: 0; }
+  .slide .quick { margin: 0; height: auto; align-self: flex-start; transform: scale(1.32); transform-origin: top center; }
+  .slide .grid-5 { grid-template-columns: repeat(3, 1fr); width: 100%; }
+  .slide .grid-5 .card:nth-child(n+4) { grid-column: span 1; }
+  .slide .grid-3 { grid-template-columns: 1fr 1fr; width: 100%; }
+  .slide .grid-3 .card:last-child { display: none; }
+  .slide .grid-4 { grid-template-columns: 1fr 1fr; width: 100%; }
+  .slide .card:hover { transform: none; }
+  .slide.dark { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<section class="slide gridded major">
+  <div class="glow" style="width:900px;height:900px;right:-200px;top:-80px"></div>
+  <div class="brand"><img src="/assets/app-icon.png" alt="">Hush</div>
+  <div><h2>{{hero_title}}</h2><p class="sub">{{ss1_sub}}</p></div>
+  <div class="visual"><div class="hero-visual">{{block_hero_visual}}</div></div>
+</section>
+
+<section class="slide gridded">
+  <div class="menubar-full menubar"><span class="dots"><i style="width:5px;height:5px"></i><i style="width:4px;height:4px;opacity:.55"></i><i style="width:3px;height:3px;background:none;box-shadow:inset 0 0 0 1px var(--ink)"></i></span><span>12:58</span></div>
+  <div class="glow" style="width:800px;height:800px;right:-160px;top:-120px"></div>
+  <div class="brand" style="top:84px"><img src="/assets/app-icon.png" alt="">Hush</div>
+  <div><h2>{{ss2_title}}</h2><p class="sub">{{mb_lead}}</p></div>
+  <div class="visual" style="align-self:start;margin-top:44px;align-items:flex-start">{{block_quick}}</div>
+</section>
+
+<section class="slide gridded">
+  <div class="brand"><img src="/assets/app-icon.png" alt="">Hush</div>
+  <div><h2>{{modes_title}}</h2><p class="sub">{{ss3_sub}}</p></div>
+  <div class="visual">{{block_modes}}</div>
+</section>
+
+<section class="slide gridded">
+  <div class="brand"><img src="/assets/app-icon.png" alt="">Hush</div>
+  <div><h2>{{ss4_title}}</h2><p class="sub">{{ss4_sub}}</p></div>
+  <div class="visual">{{block_features}}</div>
+</section>
+
+<section class="slide dark gridded major">
+  <div class="glow" style="width:900px;height:700px;left:50%;top:-260px;margin-left:-450px"></div>
+  <div class="brand"><img src="/assets/app-icon.png" alt="">Hush</div>
+  <div><h2>{{ss5_title}}</h2><p class="sub">{{ss5_sub}}</p></div>
+  <div class="visual">{{block_privacy}}</div>
+</section>
+
+</body>
+</html>

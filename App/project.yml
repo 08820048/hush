@@ -1,6 +1,6 @@
 name: Hush
 options:
-  bundleIdPrefix: dev.hushapp
+  bundleIdPrefix: fyi.hushpass
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
@@ -54,7 +54,7 @@ targets:
         CFBundleLocalizations: [en, zh-Hans]
         CFBundleAllowMixedLocalizations: true
         CFBundleURLTypes:
-          - CFBundleURLName: dev.hushapp.Hush
+          - CFBundleURLName: fyi.hushpass.Hush
             CFBundleURLSchemes: [hush]
     entitlements:
       path: Hush/Hush.entitlements
@@ -66,7 +66,7 @@ targets:
         com.apple.security.files.user-selected.read-write: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: dev.hushapp.Hush
+        PRODUCT_BUNDLE_IDENTIFIER: fyi.hushpass.Hush
         PRODUCT_NAME: Hush
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_HARDENED_RUNTIME: YES

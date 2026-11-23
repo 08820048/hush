@@ -1,0 +1,10 @@
+{
+  "ss1_sub": "A password generator for the Mac menu bar. Fully offline, stores no passwords, clears the clipboard after 30 seconds.",
+  "ss3_sub": "Random, Phrase, PIN, Syllables and Key. Strength is computed exactly, never inflated.",
+  "ss4_title": "What happens after,<br>already taken care of.",
+  "ss4_sub": "Hidden from clipboard managers and cleared on a timer. Type a website and Hush follows its rules.",
+  "ss5_sub": "No network access in the sandbox, nothing written to disk, no analytics, no accounts.",
+  "ss2_title": "A mini generator<br>in the menu bar",
+  "ss5_title": "Leaves nothing<br>behind.",
+  "p1_desc": "The sandbox has no network entitlement. Website rules ship inside the app and are looked up on your Mac."
+}

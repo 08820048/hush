@@ -49,6 +49,6 @@ make release          # 产物在 dist/,与 CI 相同
 
 `scripts/release.sh` 已经支持 Developer ID 签名、公证和 staple:设置 `DEVELOPER_ID`、`TEAM_ID`,以及 `NOTARY_PROFILE`(本机,用 `xcrun notarytool store-credentials` 创建)或 `NOTARY_KEY_PATH`/`NOTARY_KEY_ID`/`NOTARY_ISSUER`(App Store Connect API Key)。启用时还需要:
 
-- 把 `App/project.yml` 中的占位 Bundle ID `dev.hushapp.Hush` 换成自己的。
+- Bundle ID 已是 `fyi.hushpass.Hush`,在 Apple Developer 后台注册同名 App ID 即可。
 - 在 Release 工作流中加入导入证书的步骤,并把上面的变量传给 `scripts/release.sh`。
 - 删除 Release 说明和 Homebrew cask 中"尚未签名"的提示。

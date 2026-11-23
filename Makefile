@@ -4,7 +4,7 @@
 APP_BUILD := .build/xcode
 APP := $(APP_BUILD)/Build/Products/Debug/Hush.app
 
-.PHONY: test cli project app run snapshots icon release appstore site deploy-site clean
+.PHONY: test cli project app run snapshots icon release appstore appstore-screenshots site deploy-site clean
 
 test:            ## Run HushCore tests
 	swift test --package-path Core
@@ -30,8 +30,11 @@ icon:            ## Re-render the app icon (needs Pillow)
 release:         ## Build release zips into dist/ (signs and notarizes when DEVELOPER_ID is set)
 	scripts/release.sh
 
-appstore:        ## Archive the Mac App Store build (needs TEAM_ID and BUNDLE_ID, see docs/APPSTORE.md)
+appstore:        ## Archive the Mac App Store build (needs TEAM_ID, see docs/APPSTORE.md)
 	scripts/appstore.sh
+
+appstore-screenshots: ## Render 2880×1800 App Store screenshots (en, zh-Hans)
+	python3 scripts/appstore-screenshots.py
 
 site:            ## Build the website into website/dist
 	python3 website/build.py

@@ -17,16 +17,16 @@ Hush 有两个版本,来自同一份代码:
 ## 一次性准备
 
 1. **加入 Apple Developer Program**(个人,99 美元/年),在 Xcode › Settings › Accounts 登录该账号。
-2. **确定 Bundle ID**。上架后无法修改,建议用你的域名倒序:`fyi.hushpass.Hush`。在 [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list) 注册这个 App ID。
+2. **注册 Bundle ID** `fyi.hushpass.Hush`(项目已使用这个 ID,上架后不能修改)。在 [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list) 注册这个 App ID。
 3. **在 App Store Connect 新建 App**:平台 macOS,Bundle ID 选上一步的,SKU 随意(如 `hush-mac`)。
-   - **名称**:App Store 上的名称必须唯一,“Hush” 很可能已被占用。可以用 “Hush – Password Generator” 或 “HushPass”,App 本身仍显示为 Hush。
+   - **名称**:**HushPass**(与域名 hushpass.fyi 一致;App Store 名称必须唯一,“Hush” 很可能已被占用)。副标题建议:中文“安静、离线的密码生成器”,英文 “Quiet, offline password generator”。安装后 App 本身仍显示为 Hush。
 4. **协议、税务和银行**:在 App Store Connect › 业务 中签署“付费 App 协议”,填写税务和收款信息。收费 App 必须完成这一步。
 
 ## 每个版本
 
 ```sh
-TEAM_ID=你的TeamID BUNDLE_ID=fyi.hushpass.Hush make appstore           # 生成 dist/appstore/Hush.pkg
-TEAM_ID=你的TeamID BUNDLE_ID=fyi.hushpass.Hush UPLOAD=1 make appstore  # 直接上传
+TEAM_ID=你的TeamID make appstore           # 生成 dist/appstore/Hush.pkg
+TEAM_ID=你的TeamID UPLOAD=1 make appstore  # 直接上传
 ```
 
 版本号沿用 `App/project.yml` 的 `MARKETING_VERSION`,构建号自动取当前时间。也可以用 Apple 的 Transporter App 上传导出的 `.pkg`。上传后先在 TestFlight 里自己装一遍,确认没问题再提交审核。
@@ -44,7 +44,7 @@ TEAM_ID=你的TeamID BUNDLE_ID=fyi.hushpass.Hush UPLOAD=1 make appstore  # 直�
 | 版权 | `© 2026 XuYi` |
 | 技术支持网址 | `https://github.com/08820048/hush/issues` |
 | 营销网址 | `https://hushpass.fyi` |
-| 截图 | 至少 1 张,尺寸 1280×800、1440×900、2560×1600 或 2880×1800 之一。可以用宣传设计稿或 `make snapshots` 的界面截图制作 |
+| 截图 | 已做好:`marketing/appstore/screenshots/en/` 与 `zh-Hans/`,各 5 张 2880×1800,按文件名顺序上传。改了官网文案或界面后运行 `make appstore-screenshots` 重新生成。截图不含 App Store 版没有的功能(直接粘贴、检查更新) |
 
 ### 给审核人员的备注(App Review Information › Notes)
 

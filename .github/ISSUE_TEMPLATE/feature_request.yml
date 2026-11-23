@@ -1,0 +1,25 @@
+name: 功能建议 · Feature request
+description: 想让 Hush 做得更好 · An idea to make Hush better
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 遇到的问题 · The problem
+      description: 你在什么场景下觉得不方便?· When does Hush fall short for you?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: 你希望的方式 · What you'd like
+    validations:
+      required: true
+  - type: checkboxes
+    id: principles
+    attributes:
+      label: Hush 的原则 · Hush's principles
+      description: Hush 不联网、不把密码写入磁盘。· Hush never goes online and never writes secrets to disk.
+      options:
+        - label: 这个建议不需要联网,也不需要保存密码 · This idea needs no network access and stores no secrets
+          required: true

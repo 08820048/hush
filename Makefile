@@ -4,7 +4,7 @@
 APP_BUILD := .build/xcode
 APP := $(APP_BUILD)/Build/Products/Debug/Hush.app
 
-.PHONY: test cli project app run snapshots icon release clean
+.PHONY: test cli project app run snapshots icon release site deploy-site clean
 
 test:            ## Run HushCore tests
 	swift test --package-path Core
@@ -30,5 +30,11 @@ icon:            ## Re-render the app icon (needs Pillow)
 release:         ## Build release zips into dist/ (signs and notarizes when DEVELOPER_ID is set)
 	scripts/release.sh
 
+site:            ## Build the website into website/dist
+	python3 website/build.py
+
+deploy-site: site ## Deploy the website to Cloudflare Pages (needs wrangler login)
+	wrangler pages deploy website/dist --project-name hush-website --branch main
+
 clean:
-	rm -rf .build dist App/Hush.xcodeproj
+	rm -rf .build dist website/dist App/Hush.xcodeproj

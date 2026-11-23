@@ -797,6 +797,16 @@
         }
       }
     },
+    "GPL-3.0, every line public" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPL-3.0 许可,代码全部公开"
+          }
+        }
+      }
+    },
     "General" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1104,26 +1114,6 @@
         }
       }
     },
-    "MIT licensed · EFF word list (CC BY 3.0)" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MIT 开源 · 短语词库来自 EFF(CC BY 3.0)"
-          }
-        }
-      }
-    },
-    "MIT licensed, every line public" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MIT 许可,代码全部公开"
-          }
-        }
-      }
-    },
     "Marked as concealed, so Maccy, Paste and Raycast skip it" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1380,6 +1370,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开源可审计"
+          }
+        }
+      }
+    },
+    "Open source (GPL-3.0) · EFF word list (CC BY 3.0)" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPL-3.0 开源 · 短语词库来自 EFF(CC BY 3.0)"
           }
         }
       }

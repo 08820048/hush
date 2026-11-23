@@ -4,7 +4,7 @@ class HushCli < Formula
   url "https://github.com/08820048/hush/releases/download/v{{VERSION}}/hush-cli-{{VERSION}}.zip"
   version "{{VERSION}}"
   sha256 "{{CLI_SHA256}}"
-  license "MIT"
+  license "GPL-3.0-or-later"
 
   depends_on :macos
 

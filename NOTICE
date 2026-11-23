@@ -1,4 +1,11 @@
-Hush includes or depends on the following third-party work:
+Hush is free software: you can redistribute it and/or modify it under the terms of
+the GNU General Public License as published by the Free Software Foundation, either
+version 3 of the License, or (at your option) any later version. See LICENSE.
+
+Versions 0.1.0 and 0.2.0 were released under the MIT License; copies of those
+releases remain available under MIT.
+
+Hush includes or depends on the following third-party work, each under its own license:
 
 - EFF Large Wordlist for passphrases (Core/Sources/HushCore/EFFWordlist.swift)
   Electronic Frontier Foundation, https://www.eff.org/dice

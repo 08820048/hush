@@ -1,6 +1,6 @@
 # Hush 需求文档(PRD)
 
-> 版本:v0.1(草案)  ·  日期:2026-11-23  ·  平台:macOS  ·  许可证:MIT(开源)
+> 版本:v0.1(草案)  ·  日期:2026-11-23  ·  平台:macOS  ·  许可证:GPL-3.0-or-later(开源)
 
 ---
 
@@ -249,12 +249,12 @@ hush/
 ├── README.md / README.zh-CN.md
 ├── SECURITY.md
 ├── CONTRIBUTING.md
-└── LICENSE               # MIT
+└── LICENSE               # GPL-3.0
 ```
 
 ## 10. 开源与发布
 
-- **许可证**:MIT。第三方资源(EFF 词库 CC BY 3.0、password-manager-resources MIT)在 About 与 `NOTICE` 中署名。
+- **许可证**:GPL-3.0-or-later(v0.2.0 及以前为 MIT)。第三方资源(EFF 词库 CC BY 3.0、password-manager-resources MIT)在 About 与 `NOTICE` 中署名。
 - **托管**:GitHub。Issue 模板(Bug / 功能建议 / 网站规则反馈)、PR 模板、`CONTRIBUTING.md`、`SECURITY.md`(漏洞私下报告渠道)。
 - **分发**:
   - GitHub Releases 提供已签名并公证的 `.dmg`;

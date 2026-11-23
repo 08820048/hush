@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#E4E5E8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D0E10" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="{{site}}{{path}}">
+<link rel="alternate" hreflang="zh-Hans" href="{{site}}/">
+<link rel="alternate" hreflang="en" href="{{site}}/en/">
+<link rel="alternate" hreflang="x-default" href="{{site}}/en/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{title}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:url" content="{{site}}{{path}}">
+<meta property="og:image" content="{{site}}/assets/app-icon.png">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/app-icon.png">
+<link rel="stylesheet" href="/styles.css?v={{build}}">
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="{{path}}"><img src="/assets/app-icon.png" alt="">Hush</a>
+      <span class="version">v{{version}}</span>
+      <nav>
+        <a href="#modes">{{nav_features}}</a>
+        <a href="#privacy">{{nav_privacy}}</a>
+        <a href="#developers">{{nav_developers}}</a>
+        <a href="{{repo}}">GitHub</a>
+        <a href="{{other_lang_path}}" hreflang="{{other_lang}}" lang="{{other_lang}}">{{other_lang_name}}</a>
+      </nav>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <h1>{{hero_title}}</h1>
+        <p class="lead">{{hero_lead}}</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="{{download_url}}">{{download}} <small>v{{version}}</small></a>
+          <a class="btn btn-secondary" href="{{repo}}">{{view_source}}</a>
+        </div>
+        <div class="facts"><span>{{fact_license}}</span><span>macOS 14+</span><span>{{fact_chips}}</span><span>中文 · English</span></div>
+      </div>
+
+      <div class="hero-visual" aria-label="{{hero_visual_label}}">
+        <div class="hotkey"><kbd>⌥</kbd><kbd>⌘</kbd><kbd>P</kbd><span>{{hotkey_hint}}</span></div>
+        <div class="panel">
+          <div class="modes">
+            <div class="tabs">
+              <span class="tab on"><img src="/assets/icons/shuffle.png" alt="">{{mode_random}}</span>
+              <span class="tab"><img src="/assets/icons/lines.png" alt="">{{mode_phrase}}</span>
+              <span class="tab"><img src="/assets/icons/keypad.png" alt="">PIN</span>
+              <span class="tab"><img src="/assets/icons/megaphone.png" alt="">{{mode_say}}</span>
+              <span class="tab"><img src="/assets/icons/braces.png" alt="">{{mode_key}}</span>
+            </div>
+            <span class="preset"><img class="icon-xs" src="/assets/icons/tag.png" alt="">{{preset_default}}</span>
+          </div>
+          <div class="stage">
+            <div class="secret" id="demo-secret">q<span class="n">7</span><span class="y">#</span>Vt<span class="n">9</span><span class="y">!</span>mXa<span class="n">2</span><span class="y">$</span>Lp<span class="n">8</span><span class="y">@</span>Rw<span class="n">4</span>k</div>
+            <div style="display:flex;gap:4px">
+              <button type="button" aria-label="{{new}}" title="{{new}}" id="demo-shuffle"><img src="/assets/icons/shuffle.png" alt=""></button>
+            </div>
+          </div>
+          <div class="strength">
+            <img src="/assets/icons/shield.png" alt="">
+            <div class="rows">
+              <div class="labels"><span><b>{{very_strong}}</b> · 131 bits</span><span>{{crack_time}}</span></div>
+              <div class="meter" data-level="4"><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <div class="options">
+            <div class="slider"><span style="width:40px">{{length}}</span><div class="track"></div><span class="value">20</span></div>
+            <div class="charsets"><span class="chip on">A–Z</span><span class="chip on">a–z</span><span class="chip on">0–9</span><span class="chip on">#$&amp;!</span><span style="width:12px"></span><span class="chip off">{{no_lookalikes}}</span></div>
+          </div>
+          <div class="hints">
+            <div><span class="hint primary"><kbd>↩</kbd>{{copy}}</span><span class="hint"><kbd>⌘↩</kbd>{{paste_into}}</span><span class="hint"><kbd>␣</kbd>{{new}}</span><span class="hint"><kbd>⌘L</kbd>{{large_type}}</span></div>
+            <span class="hint"><kbd>esc</kbd>{{close}}</span>
+          </div>
+        </div>
+        <div class="toast"><img src="/assets/icons/timer.png" alt="">{{toast}}</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div><strong>{{stat1}}</strong><span>{{stat1_desc}}</span></div>
+      <div><strong>{{stat2}}</strong><span>{{stat2_desc}}</span></div>
+      <div><strong class="accent">{{stat3}}</strong><span>{{stat3_desc}}</span></div>
+      <div><strong>{{stat4}}</strong><span>{{stat4_desc}}</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="block" id="modes">
+  <div class="wrap">
+    <div class="head"><h2>{{modes_title}}</h2><p>{{modes_lead}}</p></div>
+    <div class="grid-5">
+      <div class="card mode"><div class="title"><img class="icon-sm" src="/assets/icons/shuffle.png" alt="">{{mode_random}}</div><div class="sample">q<span class="n">7</span><span class="y">#</span>Vt<span class="n">9</span><span class="y">!</span>mXa<span class="n">2</span><span class="y">$</span>Lp<span class="n">8</span><span class="y">@</span>Rw<span class="n">4</span>k</div><div class="meter" data-level="4"><i></i><i></i><i></i><i></i></div><div class="note">{{mode_random_note}}</div></div>
+      <div class="card mode"><div class="title"><img class="icon-sm" src="/assets/icons/lines.png" alt="">{{mode_phrase}}</div><div class="sample">Velvet-Otter-Ample-Crane-Harbor<span class="n">7</span></div><div class="meter" data-level="2"><i></i><i></i><i></i><i></i></div><div class="note">{{mode_phrase_note}}</div></div>
+      <div class="card mode"><div class="title"><img class="icon-sm" src="/assets/icons/keypad.png" alt="">PIN</div><div class="sample pin">583 917</div><div class="meter" data-level="1"><i></i><i></i><i></i><i></i></div><div class="note">{{mode_pin_note}}</div></div>
+      <div class="card mode"><div class="title"><img class="icon-sm" src="/assets/icons/megaphone.png" alt="">{{mode_say}}</div><div class="sample">Tobavu-Kimeso-Ralupe-<span class="n">42</span></div><div class="meter" data-level="2"><i></i><i></i><i></i><i></i></div><div class="note">{{mode_say_note}}</div></div>
+      <div class="card mode"><div class="title"><img class="icon-sm" src="/assets/icons/braces.png" alt="">{{mode_key}}</div><div class="sample keytext">Kp<span class="n">3</span>xR_<span class="n">9</span>fLqT<span class="n">2</span>vWm-<span class="n">8</span>hZcN<span class="n">5</span>yBd<span class="n">0</span>sGaJ<span class="n">7</span>uE</div><div class="meter" data-level="4"><i></i><i></i><i></i><i></i></div><div class="note">{{mode_key_note}}</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap grid-2">
+    <div class="card big" style="padding:40px;border-radius:24px">
+      <img class="icon" src="/assets/icons/keypad.png" alt="">
+      <h3>{{kb_title}}</h3>
+      <p>{{kb_lead}}</p>
+      <div class="shortcuts">
+        <span class="keys"><kbd>⌥</kbd><kbd>⌘</kbd><kbd>P</kbd></span><span>{{kb_open}}</span>
+        <span class="keys"><kbd>↩</kbd></span><span>{{kb_copy}}</span>
+        <span class="keys"><kbd>⌘</kbd><kbd>↩</kbd></span><span>{{kb_paste}}</span>
+        <span class="keys"><kbd>␣</kbd></span><span>{{new}}</span>
+        <span class="keys"><kbd>↑</kbd><kbd>↓</kbd></span><span>{{kb_length}}</span>
+        <span class="keys"><kbd>1</kbd>–<kbd>5</kbd></span><span>{{kb_modes}}</span>
+        <span class="keys"><kbd>⌘</kbd><kbd>1–9</kbd></span><span>{{kb_presets}}</span>
+        <span class="keys"><kbd>⌘</kbd><kbd>D</kbd></span><span>{{kb_site}}</span>
+        <span class="keys"><kbd>⌘</kbd><kbd>L</kbd><kbd>⌘</kbd><kbd>K</kbd></span><span>{{kb_large}}</span>
+        <span class="keys"><kbd>⌘</kbd><kbd>Y</kbd></span><span>{{kb_history}}</span>
+      </div>
+      <p style="margin-top:18px;color:var(--faint);font-size:12px">{{kb_more}}</p>
+    </div>
+
+    <div class="menubar-card">
+      <div class="menubar"><span class="dots"><i style="width:5px;height:5px"></i><i style="width:4px;height:4px;opacity:.55"></i><i style="width:3px;height:3px;background:none;box-shadow:inset 0 0 0 1px var(--ink)"></i></span><span>12:58</span></div>
+      <div class="quick">
+        <div class="tabs">
+          <span class="tab on"><img src="/assets/icons/shuffle.png" alt="">{{mode_random}}</span>
+          <span class="tab"><img src="/assets/icons/lines.png" alt=""></span>
+          <span class="tab"><img src="/assets/icons/keypad.png" alt=""></span>
+          <span class="tab"><img src="/assets/icons/megaphone.png" alt=""></span>
+          <span class="tab"><img src="/assets/icons/braces.png" alt=""></span>
+        </div>
+        <div class="stage">
+          <div class="secret">hvreL<span class="n">8</span>bbQutwn<span class="n">1</span>S<span class="y">!</span>LZCB</div>
+          <div class="row"><b style="font-weight:500">{{very_strong}}</b><span class="y">131 bits</span><div class="meter" data-level="4"><i></i><i></i><i></i><i></i></div></div>
+        </div>
+        <div class="btns"><span class="p">{{copy_close}}</span><span class="s">{{new}}  ␣</span></div>
+        <div class="pills"><span class="pill on"><img src="/assets/icons/shield.png" alt="">{{preset_default}}</span><span class="pill"><img src="/assets/icons/broadcast.png" alt="">Wi-Fi</span><span class="pill"><img src="/assets/icons/keypad.png" alt="">{{preset_pin}}</span><span class="pill"><img src="/assets/icons/tag.png" alt="">Team VPN</span><span class="pill ghost"><img src="/assets/icons/globe.png" alt="">{{preset_site}}</span></div>
+        <div class="banner"><img class="icon-xs" src="/assets/icons/timer.png" alt=""><span>{{banner}}</span><b>{{clear_now}}</b></div>
+      </div>
+      <div class="copy">
+        <img class="icon" src="/assets/icons/open.png" alt="">
+        <h3 style="font-size:28px;font-weight:500;letter-spacing:-.015em">{{mb_title}}</h3>
+        <p style="font-size:13px;line-height:1.7;color:var(--muted)">{{mb_lead}}</p>
+        <div class="states">
+          <span><span class="dots plain"><i style="width:5px;height:5px"></i><i style="width:4px;height:4px;opacity:.55"></i><i style="width:3px;height:3px;opacity:.25"></i></span>{{mb_rest}}</span>
+          <span><span class="dots plain"><i style="width:4px;height:4px"></i><i style="width:4px;height:4px"></i><i style="width:4px;height:4px"></i></span>{{mb_copied}}</span>
+          <span><span class="dots plain"><i style="width:5px;height:5px"></i><i style="width:4px;height:4px;opacity:.55"></i><i style="width:4px;height:4px;background:none;box-shadow:inset 0 0 0 1px var(--ink)"></i></span>{{mb_holding}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <h2 class="solo">{{after_title}}</h2>
+    <div class="grid-3">
+      <div class="card">
+        <img class="icon" src="/assets/icons/notrack.png" alt="">
+        <h3>{{clip_title}}</h3>
+        <p>{{clip_lead}}</p>
+        <div class="demo">
+          <div class="sunk"><span class="mono" style="font-size:15px">q7#V<span style="color:var(--faint);letter-spacing:.14em">••••••••••••</span>Rw4k</span>
+            <div style="display:flex;align-items:center;gap:8px"><img class="icon-xs" src="/assets/icons/timer.png" alt=""><div class="slider" style="flex:1;--fill:60%"><div class="track" style="height:3px"></div></div><span class="mono" style="font-size:11px;color:var(--muted)">18s</span></div></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="chip off">{{s10}}</span><span class="chip on">{{s30}}</span><span class="chip off">{{s60}}</span><span class="chip off">{{never}}</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <img class="icon" src="/assets/icons/globe.png" alt="">
+        <h3>{{site_title}}</h3>
+        <p>{{site_lead}}</p>
+        <div class="demo">
+          <div style="height:34px;padding:0 12px;border-radius:9px;background:var(--surface);box-shadow:inset 0 0 0 .5px var(--line-strong);display:flex;align-items:center;font-size:13px">163.com</div>
+          <div style="font-size:12px;color:var(--accent-ink)">{{site_match}}</div>
+          <div class="sunk"><span class="mono" style="font-size:15px">Lw+qu&gt;\<span class="n">7</span>V']<span class="n">4</span>@/Oo</span><div class="meter" data-level="4"><i></i><i></i><i></i><i></i></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <img class="icon" src="/assets/icons/tag.png" alt="">
+        <h3>{{presets_title}}</h3>
+        <p>{{presets_lead}}</p>
+        <div class="demo">
+          <div class="list">
+            <div class="preset-row"><img src="/assets/icons/broadcast.png" alt=""><div><b>Wi-Fi</b><small>{{preset_wifi_meta}}</small></div><kbd>⌃⌥2</kbd></div>
+            <div class="preset-row hover"><img src="/assets/icons/tag.png" alt=""><div><b>Team VPN</b><small>{{preset_vpn_meta}}</small></div><kbd>⌃⌥5</kbd></div>
+          </div>
+          <div style="display:flex;gap:8px"><span class="btn btn-secondary" style="height:32px;padding:0 14px;font-size:13px">{{import}}</span><span class="btn btn-secondary" style="height:32px;padding:0 14px;font-size:13px">{{export}}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="large">
+      <div class="card" style="padding:0;box-shadow:none;background:none"><img class="icon" src="/assets/icons/devices.png" alt=""><h3 style="font-size:28px">{{large_title}}</h3><p>{{large_lead}}</p></div>
+      <div class="groups">
+        <div><span>Velv</span><small>1</small></div>
+        <div><span>et-O</span><small>5</small></div>
+        <div><span>tter</span><small>9</small></div>
+        <div><span>-Am<span class="n">7</span></span><small>13</small></div>
+      </div>
+      <div class="qr"><img src="/assets/wifi-qr.png" alt="{{qr_alt}}">{{qr_caption}}</div>
+    </div>
+  </div>
+</section>
+
+<section class="privacy dark" id="privacy">
+  <div class="wrap">
+    <div class="head"><h2>{{privacy_title}}</h2><p>{{privacy_lead}}</p></div>
+    <div class="grid-4">
+      <div class="card"><img class="icon" src="/assets/icons/broadcast.png" alt=""><h3>{{p1}}</h3><p>{{p1_desc}}</p></div>
+      <div class="card"><img class="icon" src="/assets/icons/notrack.png" alt=""><h3>{{p2}}</h3><p>{{p2_desc}}</p></div>
+      <div class="card"><img class="icon" src="/assets/icons/timer.png" alt=""><h3>{{p3}}</h3><p>{{p3_desc}}</p></div>
+      <div class="card"><img class="icon" src="/assets/icons/braces.png" alt=""><h3>{{p4}}</h3><p>{{p4_desc}}</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="developers">
+  <div class="wrap">
+    <h2 class="solo">{{dev_title}}</h2>
+    <div class="grid-dev">
+      <div class="terminal">
+        <div class="bar"><i></i><i></i><i></i><span>zsh</span></div>
+<pre><span class="p">$</span> hush
+q<span class="d">7</span><span class="c">#</span>Vt<span class="d">9</span><span class="c">!</span>mXa<span class="d">2</span><span class="c">$</span>Lp<span class="d">8</span><span class="c">@</span>Rw<span class="d">4</span>k
+
+<span class="p">$</span> hush phrase -w 6 -s .
+Velvet.Otter.Ample.Crane.Harbor.Gusto<span class="d">7</span>
+
+<span class="p">$</span> hush --site 163.com -v
+<span class="c">Rules for 163.com: minlength: 6; maxlength: 16;</span>
+Lw+qu&gt;\<span class="d">7</span>V']<span class="d">4</span>@/Oo
+
+<span class="p">$</span> hush key -b 32 -f hex
+3f9a0c<span class="c">…</span>b71c21e
+
+<span class="p">$</span> hush -n 3 --json | jq .entropyBits
+130.9
+130.9
+130.9</pre>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:24px">
+        <div class="card"><img class="icon" src="/assets/icons/open.png" alt=""><h3>{{url_title}}</h3><p>{{url_lead}}</p><div class="demo"><div class="code">hush://generate?preset=wifi<br>hush://generate?mode=pin&amp;length=8<br>hush://generate?site=163.com&amp;copy=0</div></div></div>
+        <div class="card"><img class="icon" src="/assets/icons/gear.png" alt=""><h3>{{sc_title}}</h3><p>{{sc_lead}}</p><div class="demo" style="flex-direction:row"><span class="tag-soft">{{sc_a}}</span><span class="tag-soft">{{sc_b}}</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap grid-3">
+    <div class="card"><img class="icon" src="/assets/icons/eye.png" alt=""><h3>{{d1}}</h3><p>{{d1_desc}}</p>
+      <div class="demo"><div class="swatches"><div style="background:#EDEEF0;color:#17181C">Vt<span style="color:#1A56C0">9</span><span style="color:#62666E">!</span>mX</div><div style="background:#121315;color:#ECEDEF">Vt<span style="color:#86B2FF">9</span><span style="color:#8E929A">!</span>mX</div></div></div></div>
+    <div class="card"><img class="icon" src="/assets/icons/gear.png" alt=""><h3>{{d2}}</h3><p>{{d2_desc}}</p>
+      <div class="demo"><div class="list">
+        <div class="preset-row"><img src="/assets/icons/notrack.png" alt="" style="width:16px;height:16px"><div><b>{{d2_r1}}</b></div><small class="mono" style="color:var(--faint)">{{on}}</small></div>
+        <div class="preset-row"><img src="/assets/icons/eye.png" alt="" style="width:16px;height:16px"><div><b>{{d2_r2}}</b></div><small class="mono" style="color:var(--faint)">{{on}}</small></div>
+        <div class="preset-row"><img src="/assets/icons/timer.png" alt="" style="width:16px;height:16px"><div><b>{{d2_r3}}</b></div><small class="mono" style="color:var(--faint)">{{s30}}</small></div>
+      </div></div></div>
+    <div class="card"><img class="icon" src="/assets/icons/devices.png" alt=""><h3>中文 · English</h3><p>{{d3_desc}}</p>
+      <div class="demo" style="flex-direction:row"><span class="chip on">简体中文</span><span class="chip on">English</span></div></div>
+  </div>
+</section>
+</main>
+
+<section class="closing" id="download">
+  <div class="wrap">
+    <img class="logo" src="/assets/app-icon.png" alt="Hush">
+    <h2>{{closing_title}}</h2>
+    <p class="sub">{{closing_sub}}</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="{{download_url}}">{{download}} <small>v{{version}}</small></a>
+      <a class="btn btn-secondary" href="{{repo}}/releases">{{all_releases}}</a>
+    </div>
+    <p class="install">{{install_note}}</p>
+  </div>
+</section>
+<footer>
+  <div class="wrap">
+    <p>{{footer_license}}</p>
+    <p>{{footer_credits}}</p>
+    <p>{{footer_privacy}}</p>
+  </div>
+</footer>
+<script src="/demo.js?v={{build}}" defer></script>
+</body>
+</html>

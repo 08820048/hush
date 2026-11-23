@@ -107,7 +107,7 @@ struct OnboardingView: View {
             promise(.broadcast, String(localized: "Offline"), String(localized: "The sandbox has no network access"))
             promise(.notrack, String(localized: "No traces"), String(localized: "Nothing written to disk, invisible to clipboard managers"))
             promise(.timer, String(localized: "Auto-clear"), String(localized: "Clipboard cleared \(settings.clearAfterSeconds > 0 ? settings.clearAfterSeconds : 30) s after copying"))
-            promise(.braces, String(localized: "Open source"), String(localized: "MIT licensed, every line public"))
+            promise(.braces, String(localized: "Open source"), String(localized: "GPL-3.0, every line public"))
             Divider().padding(.top, 10)
             HStack {
                 Text("Launch at login").font(.system(size: 13))

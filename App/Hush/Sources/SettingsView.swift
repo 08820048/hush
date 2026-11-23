@@ -466,7 +466,7 @@ private struct AboutBlock: View {
                 Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 36, height: 36)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Hush \(Updates.currentVersion)").font(.system(size: 13, weight: .medium))
-                    Text("MIT licensed · EFF word list (CC BY 3.0)").font(.system(size: 11)).foregroundStyle(Palette.muted)
+                    Text("Open source (GPL-3.0) · EFF word list (CC BY 3.0)").font(.system(size: 11)).foregroundStyle(Palette.muted)
                 }
                 Spacer()
                 Button("Check for Updates…") { Updates.openReleasesPage() }

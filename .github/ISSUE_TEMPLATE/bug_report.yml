@@ -1,0 +1,56 @@
+name: 问题报告 · Bug report
+description: Hush 的行为和预期不一致 · Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **安全问题请不要在这里提交**,请按 SECURITY.md 私下报告。请勿粘贴你真实使用的密码。
+        **Do not report security issues here** — see SECURITY.md. Never paste a real password.
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么 · What happened
+      description: 包括你期望看到的结果 · Include what you expected instead
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤 · Steps to reproduce
+      placeholder: |
+        1. 按 ⌥⌘P 打开面板
+        2. …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Hush 版本 · Hush version
+      description: 设置 › 通用 底部可以看到 · Shown at the bottom of Settings › General
+      placeholder: "0.2.0"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS 版本与芯片 · macOS version and chip
+      placeholder: "macOS 15.2 · Apple M2"
+    validations:
+      required: true
+  - type: dropdown
+    id: part
+    attributes:
+      label: 涉及部分 · Area
+      options:
+        - 主面板 · Main panel
+        - 菜单栏快捷面板 · Menu bar quick panel
+        - 剪贴板 · Clipboard
+        - 设置 · Settings
+        - 命令行工具 · CLI
+        - hush:// 链接或快捷指令 · URL scheme or Shortcuts
+        - 其他 · Other
+  - type: textarea
+    id: extra
+    attributes:
+      label: 截图或其他信息 · Screenshots or anything else

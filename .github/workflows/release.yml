@@ -135,7 +135,7 @@ jobs:
 
           ## Opening the app (not signed yet)
 
-          Hush is open source and these builds are not signed with an Apple Developer ID yet, so macOS blocks the first launch.
+          Hush is a free, open-source project and these builds are not signed with an Apple Developer ID yet, so macOS blocks the first launch.
 
           1. Unzip and move **Hush.app** to Applications.
           2. Open it once. When macOS says it cannot verify the developer, click **Done**.
@@ -151,7 +151,7 @@ jobs:
 
           ## 打开方式(尚未签名)
 
-          Hush 是开源项目,目前的版本还没有用 Apple 开发者证书签名,所以 macOS 会拦截第一次打开。
+          Hush 是免费的开源项目,目前的版本还没有用 Apple 开发者证书签名,所以 macOS 会拦截第一次打开。
 
           1. 解压后把 **Hush.app** 移到"应用程序"文件夹。
           2. 打开一次。macOS 提示无法验证开发者时,点"完成"。
@@ -180,6 +180,12 @@ jobs:
             gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS.txt \
               --title "Hush $VERSION" --notes-file notes.md --verify-tag $FLAGS
           fi
+
+  website:
+    name: Update website
+    needs: publish
+    uses: ./.github/workflows/website.yml
+    secrets: inherit
 
   homebrew:
     name: Update Homebrew tap

@@ -1,10 +1,12 @@
 # Hush
 
+**官网 · Website:** https://hush-website-53q.pages.dev  ·  [下载最新版 · Download](https://github.com/08820048/hush/releases/latest)
+
 **Mac 上最快的密码生成器。** 按一下快捷键,一个强密码就安静地躺在你的剪贴板里——复制 30 秒后自动清空,剪贴板工具不会记录。
 
-完全离线、不存储任何密码、MIT 开源。
+完全离线、不存储任何密码、GPL-3.0 开源。
 
-> English: Hush is a menu-bar password generator for macOS. Press ⌥⌘P anywhere, hit ↩, and a strong password is on your clipboard — hidden from clipboard managers and wiped after 30 seconds. Offline, nothing stored, MIT licensed.
+> English: Hush is a menu-bar password generator for macOS. Press ⌥⌘P anywhere, hit ↩, and a strong password is on your clipboard — hidden from clipboard managers and wiped after 30 seconds. Offline, nothing stored, open source under GPL-3.0.
 
 ## 功能
 
@@ -96,10 +98,19 @@ App 支持简体中文和英文,跟随系统语言;其他语言的系统显示�
 Core/               生成核心 HushCore + 测试(独立 Swift 包,App 与 CLI 共用)
 Sources/hush/       命令行工具(根目录 Package.swift)
 App/                macOS App(XcodeGen 工程)
+website/            产品官网(静态页面,`make site` 构建,部署在 Cloudflare Pages)
 docs/               需求文档
 scripts/            App 图标渲染脚本
 ```
 
+## 参与贡献
+
+欢迎提交问题、建议、翻译和代码,请先阅读 [贡献指南](CONTRIBUTING.md) 和 [行为准则](CODE_OF_CONDUCT.md)。安全问题请按 [SECURITY.md](SECURITY.md) 私下报告。更新记录见 [CHANGELOG.md](CHANGELOG.md)。
+
 ## 许可
 
-MIT。短语词库来自 EFF(CC BY 3.0),第三方署名见 [NOTICE](NOTICE)。
+[GNU GPL-3.0](LICENSE)(GPL-3.0-or-later):可以自由使用、修改和分发;分发修改版或基于 Hush 的作品时,必须同样以 GPL-3.0 公开全部源码。
+
+v0.1.0 与 v0.2.0 以 MIT 许可证发布,已获取这两个版本的副本仍可按 MIT 使用。
+
+短语词库来自 EFF(CC BY 3.0),网站密码规则来自 Apple password-manager-resources(MIT),第三方署名见 [NOTICE](NOTICE)。

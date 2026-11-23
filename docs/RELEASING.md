@@ -1,6 +1,6 @@
 # 发布流程
 
-Hush 通过**版本标签**自动发布:推送 `v*.*.*` 标签后,GitHub Actions 会自动测试、构建并创建 GitHub Release。目前的版本**不签名、不公证**(开源项目暂不使用 Apple 开发者证书),Release 说明里会告诉用户如何打开。
+Hush 通过**版本标签**自动发布:推送 `v*.*.*` 标签后,GitHub Actions 会自动测试、构建并创建 GitHub Release。目前的版本**不签名、不公证**(免费开源项目,暂不使用 Apple 开发者证书),Release 说明里会告诉用户如何打开。
 
 ## 每次发布
 

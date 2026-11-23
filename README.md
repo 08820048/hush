@@ -1,6 +1,6 @@
 # Hush
 
-**官网 · Website:** https://hush-website-53q.pages.dev  ·  [下载最新版 · Download](https://github.com/08820048/hush/releases/latest)
+**官网 · Website:** https://hushpass.fyi  ·  [下载最新版 · Download](https://github.com/08820048/hush/releases/latest)
 
 **Mac 上最快的密码生成器。** 按一下快捷键,一个强密码就安静地躺在你的剪贴板里——复制 30 秒后自动清空,剪贴板工具不会记录。
 

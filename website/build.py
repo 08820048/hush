@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parent
 SRC = ROOT / "src"
 DIST = ROOT / "dist"
-SITE = os.environ.get("SITE_URL", "https://hush-website-53q.pages.dev").rstrip("/")
+SITE = os.environ.get("SITE_URL", "https://hushpass.fyi").rstrip("/")
 REPO_URL = "https://github.com/08820048/hush"
 
 # The published release the download button points at. CI passes the latest GitHub release

@@ -214,10 +214,10 @@ final class Toast {
         hideTask = Task { [weak panel] in
             try? await Task.sleep(for: .seconds(1.6))
             guard !Task.isCancelled, let panel else { return }
-            await NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.25
-                panel.animator().alphaValue = 0
-            }
+            // Fade with the animator's default 0.25 s, then remove the window once it is invisible.
+            panel.animator().alphaValue = 0
+            try? await Task.sleep(for: .milliseconds(260))
+            guard !Task.isCancelled else { return }
             panel.orderOut(nil)
         }
     }

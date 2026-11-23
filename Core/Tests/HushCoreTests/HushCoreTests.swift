@@ -100,7 +100,8 @@ struct SplitMix64: RandomSource {
     /// Inclusion–exclusion must match the closed-form count for two pools.
     @Test func entropyWithRuleIsExact() {
         let options = RandomOptions(length: 4, lowercase: false, symbols: false, requireEachClass: true)
-        let valid: Double = 36 * 36 * 36 * 36 - 26 * 26 * 26 * 26 - 10 * 10 * 10 * 10
+        // 36⁴ strings, minus 26⁴ with no digit, minus 10⁴ with no letter.
+        let valid = Double(1_679_616 - 456_976 - 10_000)
         #expect(abs(RandomPassword.entropy(options) - log2(valid)) < 1e-9)
     }
 

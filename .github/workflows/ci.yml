@@ -9,7 +9,7 @@ jobs:
   core:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Test HushCore
         run: swift test --package-path Core
       - name: Build CLI
@@ -18,7 +18,7 @@ jobs:
   app:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Build app

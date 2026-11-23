@@ -44,6 +44,8 @@ struct Hint: View {
 struct ModeTab: View {
     let mode: Mode
     let isActive: Bool
+    /// Compact: only the active tab shows its name; the others show just the icon.
+    var compact = false
     let action: () -> Void
     @State private var hovering = false
 
@@ -51,11 +53,13 @@ struct ModeTab: View {
         Button(action: action) {
             HStack(spacing: 7) {
                 GlassIcon(icon: mode.icon, size: 18, muted: !isActive)
-                Text(mode.title).font(.system(size: 13)).lineLimit(1).fixedSize()
+                if !compact || isActive {
+                    Text(mode.title).font(.system(size: 13)).lineLimit(1).fixedSize()
+                }
             }
             .foregroundStyle(isActive ? Palette.ink : (hovering ? Palette.ink : Palette.muted))
             .padding(.leading, 8)
-            .padding(.trailing, 11)
+            .padding(.trailing, compact && !isActive ? 8 : 11)
             .frame(height: 30)
             .background {
                 if isActive {

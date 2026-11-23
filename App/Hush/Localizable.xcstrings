@@ -21,6 +21,9 @@
     "%lld" : {
       "shouldTranslate" : false
     },
+    "%lld bits" : {
+      "shouldTranslate" : false
+    },
     "%lld bytes · %@" : {
       "localizations" : {
         "en" : {
@@ -87,9 +90,6 @@
         }
       }
     },
-    "%llds" : {
-      "shouldTranslate" : false
-    },
     "%lld–%lld" : {
       "localizations" : {
         "en" : {
@@ -123,6 +123,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "6 位 PIN"
+          }
+        }
+      }
+    },
+    "A Hush password is on the clipboard" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剪贴板中有 Hush 生成的密码"
           }
         }
       }
@@ -447,12 +457,12 @@
         }
       }
     },
-    "Clear Clipboard Now" : {
+    "Clear Now" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "立即清空剪贴板"
+            "value" : "立即清空"
           }
         }
       }
@@ -513,6 +523,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "复制 %lld 秒后清空剪贴板"
+          }
+        }
+      }
+    },
+    "Clipboard password clears in %lld s" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剪贴板中的密码 %lld 秒后清空"
           }
         }
       }
@@ -593,6 +613,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "复制"
+          }
+        }
+      }
+    },
+    "Copy and Close  ↩" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制并关闭  ↩"
           }
         }
       }
@@ -757,6 +787,16 @@
         }
       }
     },
+    "Full Panel ⌥⌘P" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完整面板 ⌥⌘P"
+          }
+        }
+      }
+    },
     "General" : {
       "localizations" : {
         "zh-Hans" : {
@@ -797,16 +837,6 @@
         }
       }
     },
-    "Generate and Copy" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "生成并复制"
-          }
-        }
-      }
-    },
     "Generate with Preset" : {
       "localizations" : {
         "zh-Hans" : {
@@ -837,12 +867,12 @@
         }
       }
     },
-    "Generates and copies with this preset" : {
+    "Generates and copies with this preset. Right-click opens the quick panel." : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "直接用这个预设生成并复制"
+            "value" : "直接用这个预设生成并复制。右键打开快捷面板。"
           }
         }
       }
@@ -897,16 +927,6 @@
         }
       }
     },
-    "Hover to reveal" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "悬停显示"
-          }
-        }
-      }
-    },
     "Hush %@" : {
       "shouldTranslate" : false
     },
@@ -950,12 +970,12 @@
         }
       }
     },
-    "Hush · Click to generate and copy, right-click for the menu" : {
+    "Hush · Click to generate and copy, right-click for the quick panel" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hush · 单击生成并复制,右键打开菜单"
+            "value" : "Hush · 单击生成并复制,右键打开快捷面板"
           }
         }
       }
@@ -1020,16 +1040,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在面板中调好设置,然后在预设菜单中选择“存为预设…”(⌘S)。"
-          }
-        }
-      }
-    },
-    "Just generated · Copied" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刚刚生成 · 已复制"
           }
         }
       }
@@ -1220,6 +1230,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "换一个"
+          }
+        }
+      }
+    },
+    "New  ␣" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "换一个  ␣"
           }
         }
       }
@@ -1554,12 +1574,12 @@
         }
       }
     },
-    "Quit Hush" : {
+    "Quit" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "退出 Hush"
+            "value" : "退出"
           }
         }
       }
@@ -1674,12 +1694,12 @@
         }
       }
     },
-    "Settings…" : {
+    "Settings" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置…"
+            "value" : "设置"
           }
         }
       }
@@ -1870,6 +1890,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "UUID v4 · 122 位随机"
+          }
+        }
+      }
+    },
+    "Updates" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新"
           }
         }
       }

@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var model: AppModel!
     private var panel: PanelController!
     private var statusItem: StatusItemController!
+    private var quickPanel: QuickPanelController!
     private var largeType: LargeTypeController!
     private var settingsWindow: SettingsWindowController!
     private var onboarding: OnboardingWindowController?
@@ -38,9 +39,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         panel.onShowSettings = { [weak self] in self?.settingsWindow.show() }
 
-        statusItem = StatusItemController(model: model)
-        statusItem.onOpenPanel = { [weak self] in self?.panel.show() }
-        statusItem.onOpenSettings = { [weak self] in self?.settingsWindow.show() }
+        quickPanel = QuickPanelController(model: model, history: history)
+        quickPanel.onOpenMainPanel = { [weak self] in self?.panel.show() }
+        quickPanel.onOpenWebsiteRules = { [weak self] in
+            self?.panel.show()
+            self?.model.beginChoosingWebsite()
+        }
+        quickPanel.onOpenSettings = { [weak self] in self?.settingsWindow.show() }
+        statusItem = StatusItemController(model: model, quickPanel: quickPanel)
+        quickPanel.onCopied = { [weak self] in self?.statusItem.flashCopied() }
 
         registerShortcuts()
         presets.onChange = { [weak self] in self?.registerShortcuts() }

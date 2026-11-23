@@ -196,7 +196,7 @@ private struct GeneralPage: View {
                     .toggleStyle(.switch).tint(Palette.accent).labelsHidden()
             }
             Divider().padding(.leading, 42)
-            SettingRow(icon: .copy, title: String(localized: "Click the menu bar icon"), detail: String(localized: "Generates and copies with this preset")) {
+            SettingRow(icon: .copy, title: String(localized: "Click the menu bar icon"), detail: String(localized: "Generates and copies with this preset. Right-click opens the quick panel.")) {
                 Picker("", selection: $settings.menuBarPresetID) {
                     ForEach(presets.all) { Text($0.displayName).tag($0.id) }
                 }

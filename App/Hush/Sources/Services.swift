@@ -24,6 +24,15 @@ final class ClipboardService: ObservableObject {
     static let concealedType = NSPasteboard.PasteboardType("org.nspasteboard.ConcealedType")
     static let transientType = NSPasteboard.PasteboardType("org.nspasteboard.TransientType")
 
+    #if DEBUG
+    /// Snapshot rendering only: show the "held" state without touching the real clipboard.
+    func previewHolding(_ value: String, remaining: Int, of total: Int) {
+        heldValue = value
+        self.remaining = remaining
+        self.total = total
+    }
+    #endif
+
     func copy(_ value: String, conceal: Bool, clearAfter seconds: Int) {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()

@@ -30,6 +30,16 @@ enum SnapshotRenderer {
                 let view = PanelView().environmentObject(model).environmentObject(actions).environmentObject(history).environmentObject(presets)
                 save(view, appearance: appearance, to: out.appendingPathComponent("panel-\(mode.rawValue)-\(themeName).png"))
             }
+            for mode in [Mode.random, .passphrase, .key] {
+                model.select(mode)
+                model.regenerate(animated: false)
+                if mode == .passphrase { model.clipboard.previewHolding("Velvet-Otter-Ample-Crane-Harbor7", remaining: 18, of: 30) }
+                let quick = QuickPanelView()
+                    .environmentObject(model).environmentObject(model.clipboard).environmentObject(presets).environmentObject(QuickPanelActions())
+                save(quick, appearance: appearance, to: out.appendingPathComponent("quick-\(mode.rawValue)-\(themeName).png"))
+            }
+            model.clipboard.clearIfOwned()
+            model.select(.random)
             model.beginSavingPreset()
             save(PanelView().environmentObject(model).environmentObject(actions).environmentObject(history).environmentObject(presets),
                  appearance: appearance, to: out.appendingPathComponent("panel-save-preset-\(themeName).png"))

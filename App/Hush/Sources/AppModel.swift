@@ -124,6 +124,34 @@ final class AppModel: ObservableObject {
         }
     }
 
+    // MARK: Main size knob (the slider in both panels)
+
+    var primaryLabel: String {
+        switch config {
+        case .random: String(localized: "Length")
+        case .passphrase: String(localized: "Words")
+        case .pin: String(localized: "Digits")
+        case .pronounceable: String(localized: "Groups")
+        case .key: String(localized: "Bytes")
+        }
+    }
+
+    var primaryRange: ClosedRange<Int> {
+        switch config {
+        case .random: 4...64
+        case .passphrase: PassphraseOptions.wordCountRange
+        case .pin: PINOptions.lengthRange
+        case .pronounceable: PronounceableOptions.groupRange
+        case .key: 8...128
+        }
+    }
+
+    var primaryStep: Int { if case .key = config { 8 } else { 1 } }
+
+    func setPrimary(_ value: Int) {
+        if let next = try? config.withPrimarySize(value) { update(next) }
+    }
+
     // MARK: Presets
 
     func beginSavingPreset() {

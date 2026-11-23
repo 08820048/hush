@@ -458,7 +458,7 @@ private struct ChipRow<Content: View>: View {
     }
 }
 
-private struct SliderRow: View {
+struct SliderRow: View {
     let label: String
     let value: Int
     let range: ClosedRange<Int>

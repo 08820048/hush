@@ -1,0 +1,13 @@
+Hush includes or depends on the following third-party work:
+
+- EFF Large Wordlist for passphrases (Sources/HushCore/EFFWordlist.swift)
+  Electronic Frontier Foundation, https://www.eff.org/dice
+  Licensed under CC BY 3.0 US.
+
+- KeyboardShortcuts by Sindre Sorhus (macOS app), MIT License
+  https://github.com/sindresorhus/KeyboardShortcuts
+
+- swift-argument-parser by Apple (command-line tool), Apache License 2.0
+  https://github.com/apple/swift-argument-parser
+
+- Glass icon set (App/Hush/Assets.xcassets/glass.*), provided by the project owner.

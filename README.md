@@ -1,0 +1,70 @@
+# Hush
+
+**Mac 上最快的密码生成器。** 按一下快捷键,一个强密码就安静地躺在你的剪贴板里——复制 30 秒后自动清空,剪贴板工具不会记录。
+
+完全离线、不存储任何密码、MIT 开源。
+
+> English: Hush is a menu-bar password generator for macOS. Press ⌥⌘P anywhere, hit ↩, and a strong password is on your clipboard — hidden from clipboard managers and wiped after 30 seconds. Offline, nothing stored, MIT licensed.
+
+## 功能
+
+- **五种模式**:随机字符 · 短语(EFF 7,776 词库)· PIN(避开 123456、日期等弱模式)· 可读音节 · 密钥(Hex / Base64 / Base64URL / UUID)
+- **键盘优先**:`⌥⌘P` 唤起,`↩` 复制,`⌘↩` 直接粘贴到原来的 App,`␣` 换一个,`↑↓` 调长度,`1–5` 切模式,`⌘1–6` 切预设,`⌘L` 大字显示,`⌘K` 二维码,`⌘Y` 临时历史
+- **菜单栏**:左键单击直接生成并复制;预设可绑定独立全局快捷键,不弹面板
+- **剪贴板保护**:标记为 Concealed / Transient,Maccy、Paste、Raycast 等不记录;到时只在剪贴板仍是该密码时才清空
+- **如实的强度**:4 格强度条 + 熵值(bits),"每类至少一个"、PIN 弱模式排除都精确计入,不虚标
+- **命令行工具 `hush`**:与 App 共享同一个生成核心
+
+## 安全设计
+
+- 随机数只来自 `SecRandomCopyBytes`,取值使用拒绝采样,没有取模偏差
+- "每类至少一个"通过整串重新生成实现,保持均匀分布
+- App 启用 App Sandbox,**没有申请网络权限**(见 `App/Hush/Hush.entitlements`),无统计、无埋点
+- 密码从不写入磁盘;临时历史只在内存中,5 分钟后、锁屏、睡眠或退出时销毁
+
+详见 [SECURITY.md](SECURITY.md)。
+
+## 构建
+
+需要 macOS 14+、Xcode 16+(Swift 6)和 [XcodeGen](https://github.com/yonaskolb/XcodeGen)。
+
+```sh
+make test     # 运行核心测试
+make cli      # 构建命令行工具 → .build/release/hush
+make run      # 生成 Xcode 工程、构建并启动 App
+```
+
+如果当前选中的不是完整 Xcode,可在命令前加 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`。
+
+## 命令行
+
+```sh
+hush                          # 20 位强密码
+hush -l 32 --no-symbols       # 32 位,不含符号
+hush -a                       # 排除易混淆字符
+hush phrase -w 6 -s .         # 6 个词,用 . 分隔
+hush pin 6                    # 6 位 PIN
+hush say                      # 可读音节
+hush key -b 32 -f base64url   # 32 字节密钥
+hush -p wifi                  # 使用内置预设
+hush -n 5 --json              # 批量 + JSON(含熵值与强度)
+hush presets                  # 列出内置预设
+```
+
+## 语言
+
+App 支持简体中文和英文,跟随系统语言;其他语言的系统显示英文。界面文案都在 `App/Hush/Localizable.xcstrings`(String Catalog)里,用 Xcode 打开即可编辑或新增语言,欢迎提交翻译。
+
+## 目录结构
+
+```
+Core/               生成核心 HushCore + 测试(独立 Swift 包,App 与 CLI 共用)
+Sources/hush/       命令行工具(根目录 Package.swift)
+App/                macOS App(XcodeGen 工程)
+docs/               需求文档
+scripts/            App 图标渲染脚本
+```
+
+## 许可
+
+MIT。短语词库来自 EFF(CC BY 3.0),第三方署名见 [NOTICE](NOTICE)。

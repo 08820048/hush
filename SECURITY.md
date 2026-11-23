@@ -1,0 +1,27 @@
+# Security
+
+## Threat model
+
+Hush protects against:
+
+- **Weak or reused passwords**: secrets come from the system CSPRNG with uniform sampling.
+- **Clipboard leftovers**: copied secrets are marked `org.nspasteboard.ConcealedType` and `org.nspasteboard.TransientType` so clipboard managers skip them. They are cleared after a delay (30 s by default), but only if the clipboard still holds the same item.
+- **Leaks to the network**: the app runs in the App Sandbox **without** the `com.apple.security.network.client` entitlement. There is no telemetry, no analytics and no crash reporting.
+- **Leftovers on disk**: secrets are never written to disk. The optional history lives in memory only. It is wiped after 5 minutes, on screen lock, on sleep and on quit.
+
+Hush does **not** protect against a machine that is already compromised (malware, keyloggers, a malicious process reading memory). Swift strings cannot be reliably zeroed in memory. Hush drops references to secrets as soon as it can, but cannot guarantee they are erased.
+
+## Generation
+
+- Randomness comes only from `SecRandomCopyBytes`. `SecureRandom.uniform(_:)` uses rejection sampling to avoid modulo bias.
+- The "every class at least once" rule regenerates the whole string until it passes. It never forces characters into fixed positions. The reported entropy counts the strings the rule excludes exactly, using inclusion–exclusion.
+- PIN mode excludes repeats, runs, doubled digits and date-like PINs. Entropy is computed from the exact size of the remaining set.
+- Tests include chi-square checks on the uniformity of the generator and of the character distribution.
+
+## Direct paste
+
+Pressing ⌘↩ sends a ⌘V keystroke to the app that was frontmost, which requires Accessibility permission. This is optional. Without the permission, Hush only copies.
+
+## Reporting a vulnerability
+
+Please report vulnerabilities privately through GitHub Security Advisories on this repository instead of opening a public issue.

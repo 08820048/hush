@@ -17,8 +17,11 @@ final class AppModel: ObservableObject {
     @Published private(set) var display: String = ""
     @Published var isRevealed = true
     @Published var showsHistory = false
-    /// The panel is asking for a name to save the current settings as a preset.
-    @Published var isNamingPreset = false
+    /// An inline form shown in place of the options (saving a preset, picking a website).
+    enum Form { case savePreset, website }
+    @Published var form: Form?
+    /// The website whose rules produced the current random settings, until they are changed.
+    @Published private(set) var siteLabel: String?
     @Published private(set) var errorMessage: String?
     /// Name of the app that will receive ⌘↩ paste.
     @Published private(set) var targetAppName: String?
@@ -62,11 +65,13 @@ final class AppModel: ObservableObject {
         mode = newMode
         settings.lastMode = newMode
         showsHistory = false
-        isNamingPreset = false
+        form = nil
+        siteLabel = nil
         regenerate()
     }
 
     func apply(_ preset: Preset) {
+        siteLabel = nil
         let newMode = preset.config.mode
         configs[newMode] = preset.config
         settings.store(preset.config)
@@ -84,6 +89,7 @@ final class AppModel: ObservableObject {
     }
 
     func update(_ config: GeneratorConfig) {
+        siteLabel = nil
         configs[config.mode] = config
         settings.store(config)
         regenerate(animated: false)
@@ -122,7 +128,23 @@ final class AppModel: ObservableObject {
 
     func beginSavingPreset() {
         showsHistory = false
-        isNamingPreset = true
+        form = .savePreset
+    }
+
+    func beginChoosingWebsite() {
+        showsHistory = false
+        form = .website
+    }
+
+    /// Switches to random mode with settings that satisfy the website's rules
+    /// (or the defaults when no rules are known).
+    func applyWebsite(_ input: String) {
+        let match = SiteRules.lookup(input)
+        let options = match?.rules.randomOptions() ?? RandomOptions()
+        load(.random(options))
+        siteLabel = match?.domain ?? SiteRules.normalizedHost(input)
+        form = nil
+        regenerate()
     }
 
     /// A starting name such as "Random 24" or "Phrase 6".
@@ -133,7 +155,7 @@ final class AppModel: ObservableObject {
     @discardableResult
     func savePreset(named name: String) -> Bool {
         guard presets.add(name: name, config: config) != nil else { return false }
-        isNamingPreset = false
+        form = nil
         Toast.shared.show(String(localized: "Preset saved"), icon: .tag)
         return true
     }

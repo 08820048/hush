@@ -74,3 +74,17 @@ import Testing
         }
     }
 }
+
+@Suite struct HushURLRulesTests {
+    @Test func siteAndRulesParameters() throws {
+        let site = try HushURL.parse(URL(string: "hush://generate?site=https://www.163.com/")!)
+        #expect(site == .generate(.random(SiteRules.lookup("163.com")!.rules.randomOptions()), copy: true))
+
+        let rules = try HushURL.parse(URL(string: "hush://generate?rules=maxlength:%2012;%20required:%20digit&length=10")!)
+        guard case .generate(.random(let o), _) = rules else { Issue.record("expected random"); return }
+        #expect(o.length == 10)
+
+        // Unknown sites use the defaults instead of failing.
+        #expect(try HushURL.parse(URL(string: "hush://generate?site=unknown.example")!) == .generate(.random(RandomOptions()), copy: true))
+    }
+}

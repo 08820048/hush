@@ -189,8 +189,8 @@ final class PanelController: NSObject, NSWindowDelegate {
         let shift = flags.contains(.shift)
 
         // While a preset name is being typed, keys belong to the text field; only Esc cancels.
-        if model.isNamingPreset {
-            if event.keyCode == 53 { model.isNamingPreset = false; return true }
+        if model.form != nil {
+            if event.keyCode == 53 { model.form = nil; return true }
             return false
         }
 
@@ -215,6 +215,7 @@ final class PanelController: NSObject, NSWindowDelegate {
                 case "k": openLargeType(.qr)
                 case "y": model.showsHistory.toggle()
                 case "s": model.beginSavingPreset()
+                case "d": model.beginChoosingWebsite()
                 case ",": hide(); onShowSettings?()
                 case "w": hide()
                 default:

@@ -24,8 +24,10 @@ struct PanelView: View {
             StrengthRow()
             Divider().overlay(Palette.lineStrong)
             Group {
-                if model.isNamingPreset {
+                if model.form == .savePreset {
                     SavePresetForm()
+                } else if model.form == .website {
+                    WebsiteForm()
                 } else if model.showsHistory {
                     HistoryList()
                 } else {
@@ -87,6 +89,8 @@ private struct PresetPicker: View {
                 }
             }
             Divider()
+            Button("Follow a Website’s Rules…") { model.beginChoosingWebsite() }
+                .keyboardShortcut("d", modifiers: .command)
             Button("Save as Preset…") { model.beginSavingPreset() }
                 .keyboardShortcut("s", modifiers: .command)
         } label: {
@@ -94,7 +98,7 @@ private struct PresetPicker: View {
             if let icon = Glass.tag.menuImage(size: 16) {
                 Image(nsImage: icon)
             }
-            Text(model.presetName ?? String(localized: "Custom"))
+            Text(model.siteLabel ?? model.presetName ?? String(localized: "Custom"))
         }
         .menuStyle(.borderlessButton)
         .font(.system(size: 12))
@@ -124,7 +128,7 @@ private struct SavePresetForm: View {
                     .textFieldStyle(.roundedBorder)
                     .focused($focused)
                     .onSubmit(save)
-                Button("Cancel") { model.isNamingPreset = false }
+                Button("Cancel") { model.form = nil }
                     .buttonStyle(HushButtonStyle(tone: .secondary))
                 Button("Save", action: save)
                     .buttonStyle(HushButtonStyle(tone: .primary))
@@ -141,6 +145,85 @@ private struct SavePresetForm: View {
 
     private func save() {
         model.savePreset(named: name)
+    }
+}
+
+// MARK: - Website rules
+
+private struct WebsiteForm: View {
+    @EnvironmentObject private var model: AppModel
+    @State private var input = ""
+    @FocusState private var focused: Bool
+
+    private var match: SiteRules.Match? { SiteRules.lookup(input) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                GlassIcon(icon: .globe, size: 20)
+                Text("Follow a website’s password rules").font(.system(size: 13)).foregroundStyle(Palette.ink)
+            }
+            HStack(spacing: 8) {
+                TextField("example.com or a link", text: $input)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($focused)
+                    .onSubmit(apply)
+                Button("Cancel") { model.form = nil }
+                    .buttonStyle(HushButtonStyle(tone: .secondary))
+                Button("Use", action: apply)
+                    .buttonStyle(HushButtonStyle(tone: .primary))
+                    .disabled(SiteRules.normalizedHost(input) == nil)
+            }
+            Text(status)
+                .font(.system(size: 12))
+                .foregroundStyle(match == nil ? Palette.muted : Palette.accentInk)
+                .lineLimit(1)
+                .truncationMode(.tail)
+        }
+        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .onAppear { focused = true }
+    }
+
+    private var status: String {
+        if let match {
+            return "\(match.domain) · \(RulesSummary.describe(match.rules))"
+        }
+        if let host = SiteRules.normalizedHost(input) {
+            return String(localized: "No known rules for \(host). The default password works on most sites.")
+        }
+        return String(localized: "Hush knows the rules of \(SiteRules.count) websites, offline.")
+    }
+
+    private func apply() {
+        guard SiteRules.normalizedHost(input) != nil else { return }
+        model.applyWebsite(input)
+    }
+}
+
+/// A short, human description of password rules: "6–16 characters · needs a digit · no symbols".
+enum RulesSummary {
+    static func describe(_ rules: PasswordRules) -> String {
+        var parts: [String] = []
+        switch (rules.minLength, rules.maxLength) {
+        case let (min?, max?) where min == max: parts.append(String(localized: "exactly \(min) characters"))
+        case let (min?, max?): parts.append(String(localized: "\(min)–\(max) characters"))
+        case let (min?, nil): parts.append(String(localized: "at least \(min) characters"))
+        case let (nil, max?): parts.append(String(localized: "up to \(max) characters"))
+        case (nil, nil): break
+        }
+
+        let permitted = rules.permittedCharacters
+        let symbols = CharacterPools.allSymbols.filter(permitted.contains)
+        if symbols.isEmpty {
+            parts.append(String(localized: "no symbols"))
+        } else if symbols.count < CharacterPools.allSymbols.count {
+            parts.append(String(localized: "symbols \(symbols)"))
+        }
+        if let run = rules.maxConsecutive {
+            parts.append(String(localized: "no character more than \(run)× in a row"))
+        }
+        return parts.isEmpty ? String(localized: "no special requirements") : parts.joined(separator: " · ")
     }
 }
 

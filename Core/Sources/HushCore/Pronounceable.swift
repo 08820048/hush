@@ -46,3 +46,16 @@ enum Pronounceable {
         return Double(options.groups * options.syllablesPerGroup) * perSyllable + Double(options.digits) * log2(10)
     }
 }
+
+extension PronounceableOptions {
+    /// Missing fields take their defaults, so short hand-written preset files and
+    /// settings saved by older versions still decode.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let defaults = PronounceableOptions()
+        groups = try c.decodeIfPresent(Int.self, forKey: .groups) ?? defaults.groups
+        syllablesPerGroup = try c.decodeIfPresent(Int.self, forKey: .syllablesPerGroup) ?? defaults.syllablesPerGroup
+        separator = try c.decodeIfPresent(String.self, forKey: .separator) ?? defaults.separator
+        digits = try c.decodeIfPresent(Int.self, forKey: .digits) ?? defaults.digits
+    }
+}

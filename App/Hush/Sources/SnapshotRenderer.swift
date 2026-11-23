@@ -33,7 +33,13 @@ enum SnapshotRenderer {
             model.beginSavingPreset()
             save(PanelView().environmentObject(model).environmentObject(actions).environmentObject(history).environmentObject(presets),
                  appearance: appearance, to: out.appendingPathComponent("panel-save-preset-\(themeName).png"))
-            model.isNamingPreset = false
+            model.applyWebsite("https://account.xiaomi.com/login")
+            save(PanelView().environmentObject(model).environmentObject(actions).environmentObject(history).environmentObject(presets),
+                 appearance: appearance, to: out.appendingPathComponent("panel-site-applied-\(themeName).png"))
+            model.form = .website
+            save(PanelView().environmentObject(model).environmentObject(actions).environmentObject(history).environmentObject(presets),
+                 appearance: appearance, to: out.appendingPathComponent("panel-website-\(themeName).png"))
+            model.form = nil
             save(OnboardingView(done: {}).environmentObject(settings), appearance: appearance, to: out.appendingPathComponent("onboarding-\(themeName).png"))
         }
         for (themeName, appearance) in [("light", NSAppearance(named: .aqua)!), ("dark", NSAppearance(named: .darkAqua)!)] {

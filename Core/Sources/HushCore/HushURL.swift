@@ -8,6 +8,8 @@ import Foundation
 ///     hush://generate?mode=random&length=24&symbols=0
 ///     hush://generate?mode=passphrase&words=6&separator=space
 ///     hush://generate?mode=key&bytes=64&format=hex
+///     hush://generate?site=example.com             follow a website's known password rules
+///     hush://generate?rules=minlength:8;required:digit   follow Apple password rules text
 ///     hush://generate?...&copy=0                   show the result in the panel instead of copying
 ///
 /// A URL can only produce a new secret. It can never read back one that was generated earlier.
@@ -64,7 +66,12 @@ public enum HushURL {
         let copy = try reader.bool("copy") ?? true
 
         var config: GeneratorConfig
-        if let id = reader.take("preset") {
+        if let site = reader.take("site") {
+            // Unknown sites fall back to the defaults, which most sites accept.
+            config = .random(SiteRules.lookup(site)?.rules.randomOptions() ?? RandomOptions())
+        } else if let text = reader.take("rules") {
+            config = .random(PasswordRules(parsing: text).randomOptions())
+        } else if let id = reader.take("preset") {
             guard let preset = presets.first(where: { $0.id == id }) else { throw ParseError.unknownPreset(id) }
             config = preset.config
         } else if let name = reader.take("mode") {

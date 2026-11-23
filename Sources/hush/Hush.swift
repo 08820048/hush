@@ -55,6 +55,12 @@ struct OutputOptions: ParsableArguments {
     }
 }
 
+/// Writes an informational line to stderr, keeping stdout to just the secrets.
+func note(_ message: String) {
+    fflush(stdout)
+    FileHandle.standardError.write(Data((message + "\n").utf8))
+}
+
 func describe(_ magnitude: CrackTime.Magnitude) -> String {
     switch magnitude {
     case .instant: "cracked instantly offline"
@@ -90,15 +96,60 @@ struct RandomCommand: ParsableCommand {
     @Flag(name: .customLong("no-require-each"), help: "Don't force at least one of every enabled class.")
     var noRequireEach = false
 
-    @Option(name: .shortAndLong, help: "Start from a built-in preset (see `hush presets`).")
+    @Option(name: .shortAndLong, help: "Start from a built-in preset (see `hush presets`), or a preset in --preset-file by name.")
     var preset: String?
+
+    @Option(help: ArgumentHelp("A presets file exported from Hush (Settings › Presets › Export).", valueName: "file"))
+    var presetFile: String?
+
+    @Option(help: "Follow a website's known password rules, e.g. example.com or a URL.")
+    var site: String?
+
+    @Option(help: "Follow Apple password rules text, e.g. 'minlength: 8; maxlength: 16; required: upper; required: digit;'.")
+    var rules: String?
 
     @OptionGroup var output: OutputOptions
 
+    func validate() throws {
+        if [preset != nil, site != nil, rules != nil].filter({ $0 }).count > 1 {
+            throw ValidationError("Use only one of --preset, --site and --rules.")
+        }
+        if presetFile != nil, preset == nil {
+            throw ValidationError("--preset-file needs --preset <name> to pick a preset from it.")
+        }
+    }
+
     func run() throws {
         var options = RandomOptions()
+        if let site {
+            if let match = SiteRules.lookup(site) {
+                options = match.rules.randomOptions()
+                if output.verbose { note("Rules for \(match.domain): \(match.rulesText)") }
+            } else {
+                note("No known password rules for \(SiteRules.normalizedHost(site) ?? site); using the defaults.")
+            }
+        }
+        if let rules {
+            options = PasswordRules(parsing: rules).randomOptions()
+        }
         if let preset {
-            guard let found = Preset.builtIn(id: preset) else {
+            let found: Preset?
+            if let presetFile {
+                let entries: [PresetFile.Entry]
+                do {
+                    entries = try PresetFile.read(Data(contentsOf: URL(fileURLWithPath: (presetFile as NSString).expandingTildeInPath)))
+                } catch let error as PresetFile.ReadError {
+                    throw ValidationError("\(presetFile): \(error.description)")
+                }
+                found = entries.first { $0.name.caseInsensitiveCompare(preset) == .orderedSame }
+                    .map { Preset(id: $0.name, name: $0.name, config: $0.config) }
+                guard found != nil else {
+                    throw ValidationError("No preset named '\(preset)' in \(presetFile). It has: \(entries.map(\.name).joined(separator: ", ")).")
+                }
+            } else {
+                found = Preset.builtIn(id: preset)
+            }
+            guard let found else {
                 throw ValidationError("Unknown preset '\(preset)'. Run `hush presets` to list them.")
             }
             guard case .random(let presetOptions) = found.config else {

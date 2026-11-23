@@ -40,3 +40,16 @@ enum Passphrase {
         Double(options.wordCount) * log2(Double(wordlist.count)) + (options.appendDigit ? log2(10) : 0)
     }
 }
+
+extension PassphraseOptions {
+    /// Missing fields take their defaults, so short hand-written preset files and
+    /// settings saved by older versions still decode.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let defaults = PassphraseOptions()
+        wordCount = try c.decodeIfPresent(Int.self, forKey: .wordCount) ?? defaults.wordCount
+        separator = try c.decodeIfPresent(String.self, forKey: .separator) ?? defaults.separator
+        capitalize = try c.decodeIfPresent(Bool.self, forKey: .capitalize) ?? defaults.capitalize
+        appendDigit = try c.decodeIfPresent(Bool.self, forKey: .appendDigit) ?? defaults.appendDigit
+    }
+}

@@ -118,3 +118,14 @@ enum WeakPINs {
         return weak
     }
 }
+
+extension PINOptions {
+    /// Missing fields take their defaults, so short hand-written preset files and
+    /// settings saved by older versions still decode.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let defaults = PINOptions()
+        length = try c.decodeIfPresent(Int.self, forKey: .length) ?? defaults.length
+        avoidWeakPatterns = try c.decodeIfPresent(Bool.self, forKey: .avoidWeakPatterns) ?? defaults.avoidWeakPatterns
+    }
+}

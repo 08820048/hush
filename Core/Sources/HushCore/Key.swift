@@ -55,3 +55,14 @@ enum Key {
         options.format == .uuid ? 122 : Double(options.bytes * 8)
     }
 }
+
+extension KeyOptions {
+    /// Missing fields take their defaults, so short hand-written preset files and
+    /// settings saved by older versions still decode.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let defaults = KeyOptions()
+        bytes = try c.decodeIfPresent(Int.self, forKey: .bytes) ?? defaults.bytes
+        format = try c.decodeIfPresent(KeyFormat.self, forKey: .format) ?? defaults.format
+    }
+}

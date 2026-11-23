@@ -74,6 +74,28 @@ final class PresetStore: ObservableObject {
         return custom.indices.contains(index + offset)
     }
 
+    // MARK: Import and export
+
+    /// The custom presets as a shareable file.
+    func exportData() throws -> Data {
+        try PresetFile.write(custom.map { PresetFile.Entry(name: $0.name, config: $0.config) })
+    }
+
+    /// Adds the presets in `data`, skipping ones that already exist with the same name and
+    /// settings. Returns how many were added and how many were skipped.
+    func importData(_ data: Data) throws -> (added: Int, skipped: Int) {
+        let entries = try PresetFile.read(data)
+        var added = 0
+        for entry in entries {
+            if custom.contains(where: { $0.name == entry.name && $0.config == entry.config }) { continue }
+            guard let name = Self.clean(entry.name) else { continue }
+            custom.append(Preset(id: "custom-" + UUID().uuidString.prefix(8).lowercased(), name: name, config: entry.config))
+            added += 1
+        }
+        if added > 0 { save() }
+        return (added, entries.count - added)
+    }
+
     static func clean(_ name: String) -> String? {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }

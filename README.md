@@ -9,7 +9,9 @@
 ## 功能
 
 - **五种模式**:随机字符 · 短语(EFF 7,776 词库)· PIN(避开 123456、日期等弱模式)· 可读音节 · 密钥(Hex / Base64 / Base64URL / UUID)
-- **键盘优先**:`⌥⌘P` 唤起,`↩` 复制,`⌘↩` 直接粘贴到原来的 App,`␣` 换一个,`↑↓` 调长度,`1–5` 切模式,`⌘1–6` 切预设,`⌘L` 大字显示,`⌘K` 二维码,`⌘Y` 临时历史
+- **键盘优先**:`⌥⌘P` 唤起,`↩` 复制,`⌘↩` 直接粘贴到原来的 App,`␣` 换一个,`↑↓` 调长度,`1–5` 切模式,`⌘1–9` 切预设,`⌘D` 按网站规则,`⌘S` 存为预设,`⌘L` 大字显示,`⌘K` 二维码,`⌘Y` 临时历史
+- **网站密码规则**:输入网址,自动生成符合该网站要求的密码(长度上限、允许的符号、连续重复限制等)。内置 Apple 开源的 471 个网站规则,离线可用
+- **自定义预设**:保存常用设置,绑定全局快捷键;可导出为 JSON 文件与团队共享,再导入
 - **菜单栏**:左键单击直接生成并复制;预设可绑定独立全局快捷键,不弹面板
 - **剪贴板保护**:标记为 Concealed / Transient,Maccy、Paste、Raycast 等不记录;到时只在剪贴板仍是该密码时才清空
 - **如实的强度**:4 格强度条 + 熵值(bits),"每类至少一个"、PIN 弱模式排除都精确计入,不虚标
@@ -48,6 +50,9 @@ hush pin 6                    # 6 位 PIN
 hush say                      # 可读音节
 hush key -b 32 -f base64url   # 32 字节密钥
 hush -p wifi                  # 使用内置预设
+hush --site example.com       # 按网站的已知密码规则生成
+hush --rules 'minlength: 8; maxlength: 16; required: digit;'   # 按 Apple 密码规则文本生成
+hush --preset-file team.json -p "Team VPN"                      # 使用从 App 导出的预设文件
 hush -n 5 --json              # 批量 + JSON(含熵值与强度)
 hush presets                  # 列出内置预设
 ```
@@ -60,6 +65,7 @@ hush presets                  # 列出内置预设
 open "hush://open"                                        # 打开面板
 open "hush://generate"                                    # 默认强密码,直接复制
 open "hush://generate?preset=wifi"                        # 使用预设(内置或自定义)
+open "hush://generate?site=example.com"                   # 按网站的已知密码规则
 open "hush://generate?mode=random&length=32&symbols=0"    # 随机:length upper lower digits symbols symbolset exclude-ambiguous exclude require-each
 open "hush://generate?mode=passphrase&words=6&separator=space"   # 短语:words separator capitalize digit
 open "hush://generate?mode=pin&length=8"                  # PIN:length avoid-weak

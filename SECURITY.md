@@ -6,7 +6,8 @@ Hush protects against:
 
 - **Weak or reused passwords**: secrets come from the system CSPRNG with uniform sampling.
 - **Clipboard leftovers**: copied secrets are marked `org.nspasteboard.ConcealedType` and `org.nspasteboard.TransientType` so clipboard managers skip them. They are cleared after a delay (30 s by default), but only if the clipboard still holds the same item.
-- **Leaks to the network**: the app runs in the App Sandbox **without** the `com.apple.security.network.client` entitlement. There is no telemetry, no analytics and no crash reporting.
+- **Leaks to the network**: the app runs in the App Sandbox **without** the `com.apple.security.network.client` entitlement. There is no telemetry, no analytics and no crash reporting. Website password rules are bundled in the app (from Apple's password-manager-resources), so looking up a site never sends anything anywhere.
+- **File access**: the only other entitlement is `com.apple.security.files.user-selected.read-write`. It lets Hush read or write exactly the file you pick in an Open or Save panel, for importing and exporting presets. Preset files contain settings only, never passwords.
 - **Leftovers on disk**: secrets are never written to disk. The optional history lives in memory only. It is wiped after 5 minutes, on screen lock, on sleep and on quit.
 
 Hush does **not** protect against a machine that is already compromised (malware, keyloggers, a malicious process reading memory). Swift strings cannot be reliably zeroed in memory. Hush drops references to secrets as soon as it can, but cannot guarantee they are erased.

@@ -37,6 +37,11 @@ public struct RandomOptions: Codable, Hashable, Sendable {
     public var excludedCharacters: String
     /// Every enabled class appears at least once.
     public var requireEachClass: Bool
+    /// Extra groups the password must hit: at least one character from each group
+    /// (website rules such as "at least one of !#$"). Characters outside the alphabet are ignored.
+    public var requiredGroups: [String]
+    /// The same character never appears more than this many times in a row. `nil` = no limit.
+    public var maxConsecutive: Int?
 
     public init(
         length: Int = 20,
@@ -47,7 +52,9 @@ public struct RandomOptions: Codable, Hashable, Sendable {
         symbolSet: String = CharacterPools.allSymbols,
         excludeAmbiguous: Bool = false,
         excludedCharacters: String = "",
-        requireEachClass: Bool = true
+        requireEachClass: Bool = true,
+        requiredGroups: [String] = [],
+        maxConsecutive: Int? = nil
     ) {
         self.length = length
         self.uppercase = uppercase
@@ -58,6 +65,25 @@ public struct RandomOptions: Codable, Hashable, Sendable {
         self.excludeAmbiguous = excludeAmbiguous
         self.excludedCharacters = excludedCharacters
         self.requireEachClass = requireEachClass
+        self.requiredGroups = requiredGroups
+        self.maxConsecutive = maxConsecutive
+    }
+
+    /// Decodes settings saved by older versions, which lack the newer fields.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        let defaults = RandomOptions()
+        length = try c.decodeIfPresent(Int.self, forKey: .length) ?? defaults.length
+        uppercase = try c.decodeIfPresent(Bool.self, forKey: .uppercase) ?? defaults.uppercase
+        lowercase = try c.decodeIfPresent(Bool.self, forKey: .lowercase) ?? defaults.lowercase
+        digits = try c.decodeIfPresent(Bool.self, forKey: .digits) ?? defaults.digits
+        symbols = try c.decodeIfPresent(Bool.self, forKey: .symbols) ?? defaults.symbols
+        symbolSet = try c.decodeIfPresent(String.self, forKey: .symbolSet) ?? defaults.symbolSet
+        excludeAmbiguous = try c.decodeIfPresent(Bool.self, forKey: .excludeAmbiguous) ?? defaults.excludeAmbiguous
+        excludedCharacters = try c.decodeIfPresent(String.self, forKey: .excludedCharacters) ?? defaults.excludedCharacters
+        requireEachClass = try c.decodeIfPresent(Bool.self, forKey: .requireEachClass) ?? defaults.requireEachClass
+        requiredGroups = try c.decodeIfPresent([String].self, forKey: .requiredGroups) ?? []
+        maxConsecutive = try c.decodeIfPresent(Int.self, forKey: .maxConsecutive)
     }
 
     /// The enabled, non-empty, mutually disjoint character pools after exclusions.
@@ -83,41 +109,70 @@ public struct RandomOptions: Codable, Hashable, Sendable {
     }
 }
 
-enum RandomPassword {
-    static func generate<R: RandomSource>(_ options: RandomOptions, using rng: inout R) throws -> String {
+/// The full set of constraints a candidate must satisfy, derived once from the options.
+struct RandomConstraints {
+    let alphabet: [Character]
+    /// Each set must contribute at least one character.
+    let mustHit: [Set<Character>]
+    let maxConsecutive: Int?
+
+    init(_ options: RandomOptions) throws {
         let pools = options.pools()
         guard !pools.isEmpty else { throw GeneratorError.emptyCharacterSet }
+        alphabet = pools.flatMap { $0 }
+        let inAlphabet = Set(alphabet)
+
+        var sets: [Set<Character>] = []
+        if options.requireEachClass, options.length >= pools.count, pools.count > 1 {
+            sets = pools.map(Set.init)
+        }
+        for group in options.requiredGroups {
+            let usable = Set(group).intersection(inAlphabet)
+            // A required group with nothing generable can never be satisfied.
+            guard !usable.isEmpty else { throw GeneratorError.emptyCharacterSet }
+            // A group that already contains a whole required set adds nothing.
+            if !sets.contains(where: { $0.isSubset(of: usable) }) { sets.append(usable) }
+        }
+        mustHit = sets
+        maxConsecutive = options.maxConsecutive.map { max($0, 1) }
+    }
+
+    func accepts(_ characters: [Character]) -> Bool {
+        if let limit = maxConsecutive, RandomPassword.longestRun(characters) > limit { return false }
+        let present = Set(characters)
+        return mustHit.allSatisfy { !$0.isDisjoint(with: present) }
+    }
+}
+
+enum RandomPassword {
+    static func generate<R: RandomSource>(_ options: RandomOptions, using rng: inout R) throws -> String {
+        let constraints = try RandomConstraints(options)
         guard RandomOptions.lengthRange.contains(options.length) else {
             throw GeneratorError.lengthOutOfRange(RandomOptions.lengthRange)
         }
-        let alphabet = pools.flatMap { $0 }
-        let mustCoverAll = options.requireEachClass && options.length >= pools.count
+        guard constraints.mustHit.count <= options.length else { throw GeneratorError.lengthOutOfRange(constraints.mustHit.count...RandomOptions.lengthRange.upperBound) }
 
-        // Draw whole strings uniformly and reject the ones that miss a class. Forcing a
+        // Draw whole strings uniformly and reject the ones that break a rule. Forcing a
         // character into a fixed position would make some strings likelier than others.
         while true {
-            let candidate = (0..<options.length).map { _ in rng.pick(alphabet) }
-            if !mustCoverAll || covers(candidate, pools) {
+            let candidate = (0..<options.length).map { _ in rng.pick(constraints.alphabet) }
+            if constraints.accepts(candidate) {
                 return String(candidate)
             }
         }
     }
 
-    /// Replaces the character at `index` with a fresh random one, keeping the
-    /// "every class at least once" rule if it was on.
+    /// Replaces the character at `index` with a fresh random one, keeping every rule.
     static func reroll<R: RandomSource>(_ password: String, at index: Int, options: RandomOptions, using rng: inout R) throws -> String {
         var characters = Array(password)
         guard characters.indices.contains(index) else { return password }
-        let pools = options.pools()
-        guard !pools.isEmpty else { throw GeneratorError.emptyCharacterSet }
-        let alphabet = pools.flatMap { $0 }
-        let mustCoverAll = options.requireEachClass && characters.count >= pools.count
+        let constraints = try RandomConstraints(options)
         let original = characters[index]
         for _ in 0..<1_000 {
-            let replacement = rng.pick(alphabet)
-            if replacement == original && alphabet.count > 1 { continue }
+            let replacement = rng.pick(constraints.alphabet)
+            if replacement == original && constraints.alphabet.count > 1 { continue }
             characters[index] = replacement
-            if !mustCoverAll || covers(characters, pools) { return String(characters) }
+            if constraints.accepts(characters) { return String(characters) }
         }
         return password
     }
@@ -127,29 +182,60 @@ enum RandomPassword {
         return pools.allSatisfy { pool in pool.contains(where: present.contains) }
     }
 
-    /// Exact entropy in bits, including the reduction from the "each class" rule
-    /// (inclusion–exclusion over the pools).
-    static func entropy(_ options: RandomOptions) -> Double {
-        let pools = options.pools()
-        guard !pools.isEmpty else { return 0 }
-        let n = Double(pools.reduce(0) { $0 + $1.count })
-        let length = options.length
-        let full = Double(length) * log2(n)
-        guard options.requireEachClass, length >= pools.count, pools.count > 1 else { return full }
+    static func longestRun(_ characters: [Character]) -> Int {
+        var longest = 0, run = 0
+        var previous: Character?
+        for c in characters {
+            run = c == previous ? run + 1 : 1
+            longest = max(longest, run)
+            previous = c
+        }
+        return longest
+    }
 
-        // Fraction of all strings that contain every pool:
-        // sum over subsets S of (-1)^|S| * ((n - |S's chars|) / n)^length
+    /// Exact entropy in bits: log2 of the number of strings the generator can return.
+    ///
+    /// Counting uses inclusion–exclusion over the must-hit sets: the strings that avoid every
+    /// set in S are exactly the strings over the alphabet minus their union. Each term is the
+    /// number of strings over k symbols with no run longer than the limit, kept as a fraction
+    /// of n^length so the large numbers never overflow.
+    static func entropy(_ options: RandomOptions) -> Double {
+        guard let constraints = try? RandomConstraints(options) else { return 0 }
+        let n = constraints.alphabet.count
+        let length = options.length
+        let sets = constraints.mustHit
+        guard sets.count <= 16 else { return Double(length) * log2(Double(n)) }
+
         var fraction = 0.0
-        for mask in 0..<(1 << pools.count) {
-            var removed = 0
+        for mask in 0..<(1 << sets.count) {
+            var avoided = Set<Character>()
             var bits = 0
-            for (i, pool) in pools.enumerated() where mask & (1 << i) != 0 {
-                removed += pool.count
+            for (i, set) in sets.enumerated() where mask & (1 << i) != 0 {
+                avoided.formUnion(set)
                 bits += 1
             }
-            let term = pow((n - Double(removed)) / n, Double(length))
+            let term = fractionOfStrings(alphabet: n - avoided.count, of: n, length: length, maxRun: constraints.maxConsecutive)
             fraction += bits.isMultiple(of: 2) ? term : -term
         }
-        return full + log2(max(fraction, .leastNonzeroMagnitude))
+        return Double(length) * log2(Double(n)) + log2(max(fraction, .leastNonzeroMagnitude))
+    }
+
+    /// (number of strings of `length` over `k` symbols with no run longer than `maxRun`) / n^length.
+    static func fractionOfStrings(alphabet k: Int, of n: Int, length: Int, maxRun: Int?) -> Double {
+        guard k > 0, length > 0 else { return k > 0 || length == 0 ? 1 : 0 }
+        let ratio = Double(k) / Double(n)
+        guard let limit = maxRun, limit < length else { return pow(ratio, Double(length)) }
+
+        // endingRun[j]: strings whose last j+1 characters are equal (and no longer run), scaled.
+        var endingRun = [Double](repeating: 0, count: limit)
+        endingRun[0] = ratio
+        for _ in 1..<length {
+            let total = endingRun.reduce(0, +)
+            var next = [Double](repeating: 0, count: limit)
+            next[0] = total * Double(k - 1) / Double(n)
+            for j in 1..<limit { next[j] = endingRun[j - 1] / Double(n) }
+            endingRun = next
+        }
+        return endingRun.reduce(0, +)
     }
 }

@@ -101,6 +101,22 @@
       },
       "shouldTranslate" : false
     },
+    "%lld–%lld characters" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld–%2$lld characters"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld–%2$lld 个字符"
+          }
+        }
+      }
+    },
     "6-digit PIN" : {
       "localizations" : {
         "zh-Hans" : {
@@ -581,6 +597,26 @@
         }
       }
     },
+    "Couldn’t export: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法导出:%@"
+          }
+        }
+      }
+    },
+    "Couldn’t import: %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法导入:%@"
+          }
+        }
+      }
+    },
     "Cracked instantly in an offline attack" : {
       "localizations" : {
         "zh-Hans" : {
@@ -671,12 +707,42 @@
         }
       }
     },
+    "Export…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出…"
+          }
+        }
+      }
+    },
     "Fair" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "一般"
+          }
+        }
+      }
+    },
+    "Follow a Website’s Rules…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按网站规则…"
+          }
+        }
+      }
+    },
+    "Follow a website’s password rules" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按网站的密码规则生成"
           }
         }
       }
@@ -834,6 +900,16 @@
     "Hush %@" : {
       "shouldTranslate" : false
     },
+    "Hush Presets" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hush 预设"
+          }
+        }
+      }
+    },
     "Hush Settings" : {
       "localizations" : {
         "zh-Hans" : {
@@ -844,12 +920,76 @@
         }
       }
     },
+    "Hush knows the rules of %lld websites, offline." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hush 内置了 %lld 个网站的密码规则,无需联网。"
+          }
+        }
+      }
+    },
     "Hush · Click to generate and copy, right-click for the menu" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hush · 单击生成并复制,右键打开菜单"
+          }
+        }
+      }
+    },
+    "Imported %lld presets, skipped %lld already here." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Imported %1$lld presets, skipped %2$lld already here."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已导入 %1$lld 个预设,跳过 %2$lld 个已有的预设。"
+          }
+        }
+      }
+    },
+    "Imported %lld presets." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Imported %lld preset."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Imported %lld presets."
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已导入 %lld 个预设。"
+          }
+        }
+      }
+    },
+    "Import…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入…"
           }
         }
       }
@@ -1074,6 +1214,16 @@
         }
       }
     },
+    "No known rules for %@. The default password works on most sites." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有 %@ 的已知规则。默认密码适用于大多数网站。"
+          }
+        }
+      }
+    },
     "No look-alikes" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1130,6 +1280,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "现在,按一下试试"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "好"
           }
         }
       }
@@ -1310,6 +1470,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "预设"
+          }
+        }
+      }
+    },
+    "Presets contain settings only, never passwords." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预设只包含设置,不包含任何密码。"
           }
         }
       }
@@ -1674,6 +1844,16 @@
         }
       }
     },
+    "Use" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用"
+          }
+        }
+      }
+    },
     "Very strong" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1744,6 +1924,34 @@
         }
       }
     },
+    "at least %lld characters" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "at least %lld character"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "at least %lld characters"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "至少 %lld 个字符"
+          }
+        }
+      }
+    },
     "capital %@" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1764,6 +1972,44 @@
         }
       }
     },
+    "exactly %lld characters" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "exactly %lld character"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "exactly %lld characters"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正好 %lld 个字符"
+          }
+        }
+      }
+    },
+    "example.com or a link" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "example.com 或网址"
+          }
+        }
+      }
+    },
     "lowercase %@" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1774,12 +2020,80 @@
         }
       }
     },
+    "no character more than %lld× in a row" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同一字符最多连续 %lld 次"
+          }
+        }
+      }
+    },
+    "no special requirements" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有特殊要求"
+          }
+        }
+      }
+    },
+    "no symbols" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不能用符号"
+          }
+        }
+      }
+    },
     "symbol %@" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "符号 %@"
+          }
+        }
+      }
+    },
+    "symbols %@" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "符号限 %@"
+          }
+        }
+      }
+    },
+    "up to %lld characters" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "up to %lld character"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "up to %lld characters"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最多 %lld 个字符"
           }
         }
       }

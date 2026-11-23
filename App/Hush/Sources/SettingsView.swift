@@ -1,6 +1,7 @@
 import HushCore
 import KeyboardShortcuts
 import SwiftUI
+import UniformTypeIdentifiers
 
 @MainActor
 final class SettingsWindowController {
@@ -265,6 +266,7 @@ private struct PresetsPage: View {
     @EnvironmentObject private var presets: PresetStore
     @State private var renaming: Preset?
     @State private var newName = ""
+    @State private var fileMessage: String?
 
     var body: some View {
         SettingsGroup {
@@ -274,7 +276,16 @@ private struct PresetsPage: View {
             }
         }
 
-        Text("My presets").font(.system(size: 13, weight: .medium)).foregroundStyle(Palette.ink).padding(.top, 6)
+        HStack(spacing: 8) {
+            Text("My presets").font(.system(size: 13, weight: .medium)).foregroundStyle(Palette.ink)
+            Spacer()
+            Button("Import…", action: importPresets)
+                .buttonStyle(HushButtonStyle(tone: .ghost))
+            Button("Export…", action: exportPresets)
+                .buttonStyle(HushButtonStyle(tone: .ghost))
+                .disabled(presets.custom.isEmpty)
+        }
+        .padding(.top, 6)
         if presets.custom.isEmpty {
             HStack(spacing: 14) {
                 GlassIcon(icon: .tag, size: 28)
@@ -307,6 +318,41 @@ private struct PresetsPage: View {
                 }
                 Button("Cancel", role: .cancel) { renaming = nil }
             }
+            .alert(fileMessage ?? "", isPresented: Binding(get: { fileMessage != nil }, set: { if !$0 { fileMessage = nil } })) {
+                Button("OK") { fileMessage = nil }
+            }
+    }
+
+    // MARK: Import and export (only the file the user picks is accessible to the sandbox)
+
+    private func exportPresets() {
+        let panel = NSSavePanel()
+        panel.allowedContentTypes = [.json]
+        panel.nameFieldStringValue = String(localized: "Hush Presets") + ".json"
+        panel.message = String(localized: "Presets contain settings only, never passwords.")
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try presets.exportData().write(to: url, options: .atomic)
+        } catch {
+            fileMessage = String(localized: "Couldn’t export: \(error.localizedDescription)")
+        }
+    }
+
+    private func importPresets() {
+        let panel = NSOpenPanel()
+        panel.allowedContentTypes = [.json]
+        panel.allowsMultipleSelection = false
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            let result = try presets.importData(Data(contentsOf: url))
+            fileMessage = result.skipped == 0
+                ? String(localized: "Imported \(result.added) presets.")
+                : String(localized: "Imported \(result.added) presets, skipped \(result.skipped) already here.")
+        } catch let error as PresetFile.ReadError {
+            fileMessage = String(localized: "Couldn’t import: \(error.description)")
+        } catch {
+            fileMessage = String(localized: "Couldn’t import: \(error.localizedDescription)")
+        }
     }
 
     private func row(_ preset: Preset) -> some View {

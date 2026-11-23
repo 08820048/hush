@@ -41,9 +41,12 @@ public enum HushURL {
 
     /// Parses a URL. `presets` resolves `preset=` (built-in and custom presets).
     public static func parse(_ url: URL, presets: [Preset] = Preset.builtIns) throws -> Action {
-        guard url.scheme?.lowercased() == scheme else { throw ParseError.notHushURL }
-        // Accept both hush://generate?… and hush:generate?…
-        let action = (url.host ?? url.path).trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased()
+        guard url.scheme?.lowercased() == scheme,
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        else { throw ParseError.notHushURL }
+        // Accept both hush://generate?… (host) and hush:generate?… (path). URLComponents is used
+        // instead of URL.path, whose result for the second form differs between macOS versions.
+        let action = (components.host ?? components.path).trimmingCharacters(in: CharacterSet(charactersIn: "/")).lowercased()
         switch action {
         case "open", "":
             return .open
@@ -54,7 +57,7 @@ public enum HushURL {
         }
 
         var params: [String: String] = [:]
-        for item in URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? [] {
+        for item in components.queryItems ?? [] {
             params[item.name.lowercased()] = item.value ?? ""
         }
         var reader = Reader(params: params)

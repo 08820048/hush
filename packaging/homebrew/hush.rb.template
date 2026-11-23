@@ -1,0 +1,15 @@
+cask "hush" do
+  version "{{VERSION}}"
+  sha256 "{{APP_SHA256}}"
+
+  url "https://github.com/08820048/hush/releases/download/v#{version}/Hush-#{version}.zip"
+  name "Hush"
+  desc "Keyboard-first password generator for the menu bar"
+  homepage "https://github.com/08820048/hush"
+
+  depends_on macos: ">= :sonoma"
+
+  app "Hush.app"
+
+  zap trash: "~/Library/Containers/dev.hushapp.Hush"
+end

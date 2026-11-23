@@ -1,0 +1,18 @@
+class HushCli < Formula
+  desc "Password generator CLI that shares Hush's generator core"
+  homepage "https://github.com/08820048/hush"
+  url "https://github.com/08820048/hush/releases/download/v{{VERSION}}/hush-cli-{{VERSION}}.zip"
+  version "{{VERSION}}"
+  sha256 "{{CLI_SHA256}}"
+  license "MIT"
+
+  depends_on :macos
+
+  def install
+    bin.install "hush"
+  end
+
+  test do
+    assert_match(/\A\d{6}\z/, shell_output("#{bin}/hush pin 6").strip)
+  end
+end

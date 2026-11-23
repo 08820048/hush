@@ -32,6 +32,7 @@
 make test     # 运行核心测试
 make cli      # 构建命令行工具 → .build/release/hush
 make run      # 生成 Xcode 工程、构建并启动 App
+make release  # 打包发布版到 dist/(发布流程见 docs/RELEASING.md)
 ```
 
 如果当前选中的不是完整 Xcode,可在命令前加 `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`。

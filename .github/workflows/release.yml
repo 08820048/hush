@@ -1,0 +1,93 @@
+name: Release
+
+# Push a tag like v0.1.0 to build, sign, notarize and publish a GitHub Release.
+#
+# Signing is optional. Without these repository secrets the release is built ad-hoc and
+# marked as a pre-release that is not for general distribution:
+#   DEVELOPER_ID_P12          base64 of the "Developer ID Application" certificate (.p12)
+#   DEVELOPER_ID_P12_PASSWORD password of that .p12
+#   DEVELOPER_ID              e.g. "Developer ID Application: Your Name (TEAMID)"
+#   TEAM_ID                   e.g. TEAMID
+#   NOTARY_KEY_P8             base64 of an App Store Connect API key (.p8)
+#   NOTARY_KEY_ID             key ID of that API key
+#   NOTARY_ISSUER             issuer ID of that API key
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Import signing certificate
+        id: signing
+        env:
+          P12: ${{ secrets.DEVELOPER_ID_P12 }}
+          P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+        run: |
+          if [ -z "$P12" ]; then
+            echo "No signing secrets: building an ad-hoc pre-release."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(openssl rand -hex 16)"
+          echo "$P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/cert.p12"
+          echo "$NOTARY_KEY_P8" | base64 --decode > "$RUNNER_TEMP/AuthKey.p8"
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build release
+        env:
+          DEVELOPER_ID: ${{ steps.signing.outputs.signed == 'true' && secrets.DEVELOPER_ID || '' }}
+          TEAM_ID: ${{ steps.signing.outputs.signed == 'true' && secrets.TEAM_ID || '' }}
+          NOTARY_KEY_PATH: ${{ steps.signing.outputs.signed == 'true' && format('{0}/AuthKey.p8', runner.temp) || '' }}
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER: ${{ secrets.NOTARY_ISSUER }}
+        run: scripts/release.sh "${GITHUB_REF_NAME}"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNED: ${{ steps.signing.outputs.signed }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$SIGNED" = "true" ]; then
+            NOTE="Signed with Developer ID and notarized by Apple."
+            FLAGS=""
+          else
+            NOTE="**Not signed or notarized.** For testing only: macOS will refuse to open it until you right-click › Open, or build from source."
+            FLAGS="--prerelease"
+          fi
+          cat > notes.md <<EOF
+          $NOTE
+
+          - \`Hush-$VERSION.zip\`: the menu bar app (Apple silicon and Intel, macOS 14+)
+          - \`hush-cli-$VERSION.zip\`: the \`hush\` command-line tool
+
+          SHA-256 checksums are in \`SHA256SUMS.txt\`.
+          EOF
+          gh release create "$GITHUB_REF_NAME" dist/*.zip dist/SHA256SUMS.txt \
+            --title "Hush $VERSION" --notes-file notes.md $FLAGS
+
+      - name: Clean up keychain
+        if: always() && steps.signing.outputs.signed == 'true'
+        run: |
+          security delete-keychain "$RUNNER_TEMP/signing.keychain-db" || true
+          rm -f "$RUNNER_TEMP/AuthKey.p8"

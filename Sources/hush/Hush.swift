@@ -170,7 +170,7 @@ struct KeyCommand: ParsableCommand {
     }
 }
 
-extension KeyFormat: ExpressibleByArgument {}
+extension KeyFormat: @retroactive ExpressibleByArgument {}
 
 struct PresetsCommand: ParsableCommand {
     static let configuration = CommandConfiguration(commandName: "presets", abstract: "List built-in presets.")

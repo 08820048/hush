@@ -4,7 +4,7 @@
 APP_BUILD := .build/xcode
 APP := $(APP_BUILD)/Build/Products/Debug/Hush.app
 
-.PHONY: test cli project app run snapshots icon clean
+.PHONY: test cli project app run snapshots icon release clean
 
 test:            ## Run HushCore tests
 	swift test --package-path Core
@@ -27,5 +27,8 @@ snapshots: app   ## Render UI snapshots offscreen (Debug only) and print their f
 icon:            ## Re-render the app icon (needs Pillow)
 	python3 scripts/render_app_icon.py App/Hush/Assets.xcassets/AppIcon.appiconset
 
+release:         ## Build release zips into dist/ (signs and notarizes when DEVELOPER_ID is set)
+	scripts/release.sh
+
 clean:
-	rm -rf .build App/Hush.xcodeproj
+	rm -rf .build dist App/Hush.xcodeproj

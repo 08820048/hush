@@ -461,12 +461,21 @@ private struct DeveloperPage: View {
 
 private struct AboutBlock: View {
     var body: some View {
-        HStack(spacing: 12) {
-            Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 36, height: 36)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Hush \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")").font(.system(size: 13, weight: .medium))
-                Text("MIT licensed · Passphrase word list by the EFF (CC BY 3.0)").font(.system(size: 11)).foregroundStyle(Palette.muted)
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 12) {
+                Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 36, height: 36)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Hush \(Updates.currentVersion)").font(.system(size: 13, weight: .medium))
+                    Text("MIT licensed · EFF word list (CC BY 3.0)").font(.system(size: 11)).foregroundStyle(Palette.muted)
+                }
+                Spacer()
+                Button("Check for Updates…") { Updates.openReleasesPage() }
+                    .buttonStyle(HushButtonStyle(tone: .secondary))
             }
+            Text("Hush never goes online, so it doesn’t check for updates by itself. The button opens the latest release on GitHub. If you installed with Homebrew, run brew upgrade --cask hush.")
+                .font(.system(size: 11))
+                .foregroundStyle(Palette.muted)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.top, 8)
     }

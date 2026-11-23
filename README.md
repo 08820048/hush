@@ -78,6 +78,14 @@ open "hush://generate?mode=key&bytes=64&format=hex&copy=0"       # 密钥:bytes 
 
 **自定义预设**:在面板里调好设置,按 `⌘S` 存为预设;在设置的"预设"页可以重命名、排序、删除,并给它绑定全局快捷键。
 
+## 更新
+
+Hush 从不联网,所以**不会自动检查更新**。想更新时:
+
+- 菜单栏菜单或"设置 › 通用"中点击"检查更新…",会在浏览器中打开 [GitHub 上的最新版本](https://github.com/08820048/hush/releases/latest),下载后替换"应用程序"中的 Hush.app 即可。设置和预设都会保留。
+- 用 Homebrew 安装的:`brew upgrade --cask hush`(命令行工具:`brew upgrade hush-cli`)。
+- 想收到新版本通知,可以在 GitHub 仓库页面点 Watch › Custom › Releases。
+
 ## 语言
 
 App 支持简体中文和英文,跟随系统语言;其他语言的系统显示英文。界面文案都在 `App/Hush/Localizable.xcstrings`(String Catalog)里,用 Xcode 打开即可编辑或新增语言,欢迎提交翻译。

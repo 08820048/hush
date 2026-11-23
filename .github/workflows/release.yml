@@ -145,6 +145,10 @@ jobs:
 
           To install the CLI: unzip, then \`mv hush /usr/local/bin/\` (or anywhere on your PATH). The same \`xattr\` command applies if macOS blocks it.
 
+          ## Updating
+
+          Hush never goes online, so it does not update itself. Quit Hush and replace Hush.app in Applications with the new one; settings and presets are kept. **Check for Updates…** in the menu opens this page. With Homebrew: \`brew upgrade --cask hush\`.
+
           ## 打开方式(尚未签名)
 
           Hush 是开源项目,目前的版本还没有用 Apple 开发者证书签名,所以 macOS 会拦截第一次打开。
@@ -154,6 +158,8 @@ jobs:
           3. 打开"系统设置 › 隐私与安全性",在页面下方点击 Hush 旁边的"仍要打开"。
 
           也可以在终端运行:\`xattr -dr com.apple.quarantine /Applications/Hush.app\`
+
+          **更新:** Hush 从不联网,不会自动更新。退出 Hush,用新版本替换"应用程序"中的 Hush.app 即可,设置和预设都会保留。菜单中的"检查更新…"会打开本页面。Homebrew 用户运行 \`brew upgrade --cask hush\`。
           EOF
           } > notes.md
           cat notes.md

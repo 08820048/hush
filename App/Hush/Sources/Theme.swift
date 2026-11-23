@@ -230,6 +230,23 @@ extension NSWindow {
     }
 }
 
+// MARK: - Updates
+
+/// Hush never checks for updates over the network (it has no network access).
+/// "Check for Updates…" opens the releases page in the browser instead.
+enum Updates {
+    static let releasesURL = URL(string: "https://github.com/08820048/hush/releases/latest")!
+
+    static var currentVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+    }
+
+    @MainActor
+    static func openReleasesPage() {
+        NSWorkspace.shared.open(releasesURL)
+    }
+}
+
 // MARK: - Hairlines
 
 /// A rounded border exactly one device pixel wide. A fixed 0.5 pt stroke is half a pixel on

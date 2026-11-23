@@ -437,6 +437,16 @@
         }
       }
     },
+    "Check for Updates…" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查更新…"
+          }
+        }
+      }
+    },
     "Clear Clipboard Now" : {
       "localizations" : {
         "zh-Hans" : {
@@ -930,6 +940,16 @@
         }
       }
     },
+    "Hush never goes online, so it doesn’t check for updates by itself. The button opens the latest release on GitHub. If you installed with Homebrew, run brew upgrade --cask hush." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hush 从不联网,所以不会自动检查更新。点击按钮会在浏览器中打开 GitHub 上的最新版本。如果是用 Homebrew 安装的,运行 brew upgrade --cask hush 即可。"
+          }
+        }
+      }
+    },
     "Hush · Click to generate and copy, right-click for the menu" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1074,7 +1094,7 @@
         }
       }
     },
-    "MIT licensed · Passphrase word list by the EFF (CC BY 3.0)" : {
+    "MIT licensed · EFF word list (CC BY 3.0)" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1340,6 +1360,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开源可审计"
+          }
+        }
+      }
+    },
+    "Opens the latest release on GitHub. Hush itself never goes online." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在浏览器中打开 GitHub 上的最新版本。Hush 本身从不联网。"
           }
         }
       }

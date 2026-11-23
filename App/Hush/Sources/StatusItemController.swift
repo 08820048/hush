@@ -150,6 +150,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         clear.isEnabled = model.clipboard.heldValue != nil
         menu.addItem(clear)
         menu.addItem(entry(String(localized: "Settings…"), icon: .gear, shortcut: nil) { [weak self] in self?.onOpenSettings?() })
+        let update = entry(String(localized: "Check for Updates…"), icon: .globe, shortcut: nil) { Updates.openReleasesPage() }
+        update.toolTip = String(localized: "Opens the latest release on GitHub. Hush itself never goes online.")
+        menu.addItem(update)
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: String(localized: "Quit Hush"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
     }

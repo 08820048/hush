@@ -109,7 +109,7 @@ scripts/            App 图标渲染脚本
 
 ## 许可
 
-[GNU GPL-3.0](LICENSE)(GPL-3.0-or-later):可以自由使用、修改和分发;分发修改版或基于 Hush 的作品时,必须同样以 GPL-3.0 公开全部源码。
+Copyright © 2026 XuYi。以 [GNU GPL-3.0](LICENSE)(GPL-3.0-or-later)发布:可以自由使用、修改和分发;分发修改版或基于 Hush 的作品时,必须同样以 GPL-3.0 公开全部源码。
 
 v0.1.0 与 v0.2.0 以 MIT 许可证发布,已获取这两个版本的副本仍可按 MIT 使用。
 

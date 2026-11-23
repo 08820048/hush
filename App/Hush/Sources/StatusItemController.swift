@@ -8,15 +8,17 @@ extension KeyboardShortcuts.Name {
     static let togglePanel = Self("togglePanel", default: .init(.p, modifiers: [.option, .command]))
     static let clearClipboard = Self("clearClipboard")
 
-    /// Global "generate & copy" shortcuts for presets, matching the menu in design 04.
-    static let presetShortcuts: [String: KeyboardShortcuts.Name] = [
-        "default": Self("preset.default", default: .init(.one, modifiers: [.control, .option])),
-        "wifi": Self("preset.wifi", default: .init(.two, modifiers: [.control, .option])),
-        "pin6": Self("preset.pin6", default: .init(.three, modifiers: [.control, .option])),
-        "devkey": Self("preset.devkey", default: .init(.four, modifiers: [.control, .option])),
-        "compatible": Self("preset.compatible"),
-        "memorable": Self("preset.memorable"),
-    ]
+    /// Global "generate & copy" shortcut for a preset (built-in or custom).
+    /// Four built-ins come with defaults, matching the menu in design 04.
+    static func preset(_ id: String) -> Self {
+        let defaults: [String: KeyboardShortcuts.Shortcut] = [
+            "default": .init(.one, modifiers: [.control, .option]),
+            "wifi": .init(.two, modifiers: [.control, .option]),
+            "pin6": .init(.three, modifiers: [.control, .option]),
+            "devkey": .init(.four, modifiers: [.control, .option]),
+        ]
+        return Self("preset.\(id)", default: defaults[id])
+    }
 }
 
 /// The three fading dots. Monochrome template images, so macOS tints them for light/dark menu bars.
@@ -90,7 +92,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             item.menu = menu
             item.button?.performClick(nil)
         } else {
-            model.quickCopy(model.settings.menuBarPreset)
+            model.quickCopy(model.menuBarPreset)
             flashCopied()
         }
     }
@@ -129,7 +131,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         menu.addItem(entry(String(localized: "Open Hush"), icon: .open, shortcut: .togglePanel) { [weak self] in self?.onOpenPanel?() })
         menu.addItem(entry(String(localized: "Generate and Copy"), icon: .copy, shortcut: nil) { [weak self] in
             guard let self else { return }
-            self.model.quickCopy(self.model.settings.menuBarPreset)
+            self.model.quickCopy(self.model.menuBarPreset)
             self.flashCopied()
         })
         menu.addItem(.separator())
@@ -137,8 +139,8 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         let title = NSMenuItem(title: String(localized: "Presets"), action: nil, keyEquivalent: "")
         title.isEnabled = false
         menu.addItem(title)
-        for preset in Preset.builtIns {
-            menu.addItem(entry(preset.displayName, icon: icon(for: preset), shortcut: KeyboardShortcuts.Name.presetShortcuts[preset.id]) { [weak self] in
+        for preset in model.presets.all {
+            menu.addItem(entry(preset.displayName, icon: preset.icon, shortcut: .preset(preset.id)) { [weak self] in
                 self?.model.quickCopy(preset)
                 self?.flashCopied()
             })
@@ -163,16 +165,6 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         return item
     }
 
-    private func icon(for preset: Preset) -> Glass {
-        switch preset.id {
-        case "default": .shield
-        case "wifi": .broadcast
-        case "pin6": .keypad
-        case "devkey": .braces
-        case "memorable": .lines
-        default: preset.config.mode.icon
-        }
-    }
 }
 
 final class ClosureMenuItem: NSMenuItem {

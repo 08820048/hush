@@ -44,6 +44,9 @@ targets:
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [en, zh-Hans]
         CFBundleAllowMixedLocalizations: true
+        CFBundleURLTypes:
+          - CFBundleURLName: dev.hushapp.Hush
+            CFBundleURLSchemes: [hush]
     entitlements:
       path: Hush/Hush.entitlements
       properties:

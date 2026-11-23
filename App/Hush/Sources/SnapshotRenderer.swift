@@ -18,22 +18,28 @@ enum SnapshotRenderer {
         let settings = AppSettings(defaults: defaults)
         settings.animationsEnabled = false
         let history = HistoryStore()
-        let model = AppModel(settings: settings, clipboard: ClipboardService(), history: history)
+        let presets = PresetStore(defaults: defaults)
+        presets.add(name: "Team VPN", config: .random(RandomOptions(length: 24, symbolSet: CharacterPools.compatibleSymbols)))
+        let model = AppModel(settings: settings, clipboard: ClipboardService(), history: history, presets: presets)
         let actions = PanelActions()
 
         for (themeName, appearance) in [("light", NSAppearance(named: .aqua)!), ("dark", NSAppearance(named: .darkAqua)!)] {
             for mode in Mode.allCases {
                 model.select(mode)
                 model.regenerate(animated: false)
-                let view = PanelView().environmentObject(model).environmentObject(actions).environmentObject(history)
+                let view = PanelView().environmentObject(model).environmentObject(actions).environmentObject(history).environmentObject(presets)
                 save(view, appearance: appearance, to: out.appendingPathComponent("panel-\(mode.rawValue)-\(themeName).png"))
             }
+            model.beginSavingPreset()
+            save(PanelView().environmentObject(model).environmentObject(actions).environmentObject(history).environmentObject(presets),
+                 appearance: appearance, to: out.appendingPathComponent("panel-save-preset-\(themeName).png"))
+            model.isNamingPreset = false
             save(OnboardingView(done: {}).environmentObject(settings), appearance: appearance, to: out.appendingPathComponent("onboarding-\(themeName).png"))
         }
         for (themeName, appearance) in [("light", NSAppearance(named: .aqua)!), ("dark", NSAppearance(named: .darkAqua)!)] {
             NSApp.appearance = appearance
             for page in SettingsPage.allCases {
-                let controller = SettingsWindowController(settings: settings)
+                let controller = SettingsWindowController(settings: settings, presets: presets)
                 controller.page = page
                 controller.show()
                 if let window = controller.window {

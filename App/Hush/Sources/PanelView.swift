@@ -24,7 +24,9 @@ struct PanelView: View {
             StrengthRow()
             Divider().overlay(Palette.lineStrong)
             Group {
-                if model.showsHistory {
+                if model.isNamingPreset {
+                    SavePresetForm()
+                } else if model.showsHistory {
                     HistoryList()
                 } else {
                     OptionsView()
@@ -71,12 +73,22 @@ struct PanelView: View {
 
 private struct PresetPicker: View {
     @EnvironmentObject private var model: AppModel
+    @EnvironmentObject private var presets: PresetStore
 
     var body: some View {
         Menu {
-            ForEach(Preset.builtIns) { preset in
-                Button(preset.displayName) { model.apply(preset) }
+            ForEach(Array(model.presets.all.enumerated()), id: \.element.id) { index, preset in
+                if index == Preset.builtIns.count { Divider() }
+                if index < 9 {
+                    Button(preset.displayName) { model.apply(preset) }
+                        .keyboardShortcut(KeyEquivalent(Character("\(index + 1)")), modifiers: .command)
+                } else {
+                    Button(preset.displayName) { model.apply(preset) }
+                }
             }
+            Divider()
+            Button("Save as Preset…") { model.beginSavingPreset() }
+                .keyboardShortcut("s", modifiers: .command)
         } label: {
             // Menu labels render images at their natural size, so use a pre-sized bitmap.
             if let icon = Glass.tag.menuImage(size: 16) {
@@ -91,6 +103,44 @@ private struct PresetPicker: View {
         .padding(.horizontal, 6)
         .frame(height: 30)
         .help("Presets")
+    }
+}
+
+// MARK: - Save as preset
+
+private struct SavePresetForm: View {
+    @EnvironmentObject private var model: AppModel
+    @State private var name = ""
+    @FocusState private var focused: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 10) {
+                GlassIcon(icon: .tag, size: 20)
+                Text("Save the current settings as a preset").font(.system(size: 13)).foregroundStyle(Palette.ink)
+            }
+            HStack(spacing: 8) {
+                TextField("Preset name", text: $name)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($focused)
+                    .onSubmit(save)
+                Button("Cancel") { model.isNamingPreset = false }
+                    .buttonStyle(HushButtonStyle(tone: .secondary))
+                Button("Save", action: save)
+                    .buttonStyle(HushButtonStyle(tone: .primary))
+                    .disabled(PresetStore.clean(name) == nil)
+            }
+        }
+        .padding(.horizontal, 20)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .onAppear {
+            name = model.suggestedPresetName
+            focused = true
+        }
+    }
+
+    private func save() {
+        model.savePreset(named: name)
     }
 }
 

@@ -190,6 +190,19 @@ extension Preset {
     }
 }
 
+extension Preset {
+    var icon: Glass {
+        switch id {
+        case "default": .shield
+        case "wifi": .broadcast
+        case "pin6": .keypad
+        case "devkey": .braces
+        case "memorable": .lines
+        default: config.mode.icon
+        }
+    }
+}
+
 extension KeyFormat {
     var title: String {
         switch self {

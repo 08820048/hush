@@ -36,6 +36,7 @@ final class PanelController: NSObject, NSWindowDelegate {
             .environmentObject(model)
             .environmentObject(actions)
             .environmentObject(history)
+            .environmentObject(model.presets)
         hosting = NSHostingController(rootView: AnyView(root))
         // The panel's size is set by `fit()`, never by the hosting view itself.
         hosting.sizingOptions = []
@@ -187,6 +188,12 @@ final class PanelController: NSObject, NSWindowDelegate {
         let command = flags.contains(.command)
         let shift = flags.contains(.shift)
 
+        // While a preset name is being typed, keys belong to the text field; only Esc cancels.
+        if model.isNamingPreset {
+            if event.keyCode == 53 { model.isNamingPreset = false; return true }
+            return false
+        }
+
         switch event.keyCode {
         case 36, 76: // Return, Enter
             command ? pasteIntoTarget() : copyAndClose()
@@ -207,11 +214,13 @@ final class PanelController: NSObject, NSWindowDelegate {
                 case "l": openLargeType(.text)
                 case "k": openLargeType(.qr)
                 case "y": model.showsHistory.toggle()
+                case "s": model.beginSavingPreset()
                 case ",": hide(); onShowSettings?()
                 case "w": hide()
                 default:
-                    if let n = Int(characters), (1...Preset.builtIns.count).contains(n) {
-                        model.apply(Preset.builtIns[n - 1])
+                    let all = model.presets.all
+                    if let n = Int(characters), (1...min(all.count, 9)).contains(n) {
+                        model.apply(all[n - 1])
                     } else {
                         return false
                     }

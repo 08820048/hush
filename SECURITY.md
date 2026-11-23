@@ -22,6 +22,12 @@ Hush does **not** protect against a machine that is already compromised (malware
 
 Pressing ⌘↩ sends a ⌘V keystroke to the app that was frontmost, which requires Accessibility permission. This is optional. Without the permission, Hush only copies.
 
+## URL scheme and Shortcuts
+
+`hush://` URLs and the Shortcuts actions can only create a **new** secret. Nothing can read back a secret that was generated earlier, and history is never exposed. Any app or web page that opens a `hush://generate` URL can make Hush put a fresh password on the clipboard, but it cannot see that password. Browsers ask before opening apps through custom URL schemes.
+
+Custom presets store settings only (length, character classes, word count and so on), never passwords. They live in the app's UserDefaults.
+
 ## Reporting a vulnerability
 
 Please report vulnerabilities privately through GitHub Security Advisories on this repository instead of opening a public issue.

@@ -81,8 +81,6 @@ final class AppSettings: ObservableObject {
         }
     }
 
-    var menuBarPreset: Preset { Preset.builtIn(id: menuBarPresetID) ?? Preset.builtIns[0] }
-
     // MARK: System integration
 
     func setLaunchAtLogin(_ enabled: Bool) {

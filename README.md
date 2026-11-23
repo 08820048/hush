@@ -51,6 +51,26 @@ hush -n 5 --json              # 批量 + JSON(含熵值与强度)
 hush presets                  # 列出内置预设
 ```
 
+## 自动化
+
+**URL Scheme**:任何能打开链接的工具(Alfred、Raycast、终端里的 `open`、脚本)都能调用 Hush。默认生成后直接复制(同样受剪贴板保护),加 `copy=0` 改为在面板中显示。
+
+```sh
+open "hush://open"                                        # 打开面板
+open "hush://generate"                                    # 默认强密码,直接复制
+open "hush://generate?preset=wifi"                        # 使用预设(内置或自定义)
+open "hush://generate?mode=random&length=32&symbols=0"    # 随机:length upper lower digits symbols symbolset exclude-ambiguous exclude require-each
+open "hush://generate?mode=passphrase&words=6&separator=space"   # 短语:words separator capitalize digit
+open "hush://generate?mode=pin&length=8"                  # PIN:length avoid-weak
+open "hush://generate?mode=key&bytes=64&format=hex&copy=0"       # 密钥:bytes format;可读:groups digits
+```
+
+参数写错时会弹出提示,说明是哪个参数,不会静默忽略。
+
+**快捷指令**:提供"生成密码"和"用预设生成"两个动作,返回生成的密码,可选同时复制到剪贴板。
+
+**自定义预设**:在面板里调好设置,按 `⌘S` 存为预设;在设置的"预设"页可以重命名、排序、删除,并给它绑定全局快捷键。
+
 ## 语言
 
 App 支持简体中文和英文,跟随系统语言;其他语言的系统显示英文。界面文案都在 `App/Hush/Localizable.xcstrings`(String Catalog)里,用 Xcode 打开即可编辑或新增语言,欢迎提交翻译。

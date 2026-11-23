@@ -8,6 +8,7 @@ final class AppModel: ObservableObject {
     let settings: AppSettings
     let clipboard: ClipboardService
     let history: HistoryStore
+    let presets: PresetStore
 
     @Published private(set) var mode: Mode
     @Published private(set) var configs: [Mode: GeneratorConfig]
@@ -16,16 +17,19 @@ final class AppModel: ObservableObject {
     @Published private(set) var display: String = ""
     @Published var isRevealed = true
     @Published var showsHistory = false
+    /// The panel is asking for a name to save the current settings as a preset.
+    @Published var isNamingPreset = false
     @Published private(set) var errorMessage: String?
     /// Name of the app that will receive ⌘↩ paste.
     @Published private(set) var targetAppName: String?
 
     private var revealTask: Task<Void, Never>?
 
-    init(settings: AppSettings, clipboard: ClipboardService, history: HistoryStore) {
+    init(settings: AppSettings, clipboard: ClipboardService, history: HistoryStore, presets: PresetStore) {
         self.settings = settings
         self.clipboard = clipboard
         self.history = history
+        self.presets = presets
         mode = settings.lastMode
         configs = Dictionary(uniqueKeysWithValues: Mode.allCases.map { ($0, settings.storedConfig(for: $0)) })
     }
@@ -33,7 +37,10 @@ final class AppModel: ObservableObject {
     var config: GeneratorConfig { configs[mode] ?? .defaultConfig(for: mode) }
 
     /// The built-in preset the current settings match, if any.
-    var presetName: String? { Preset.builtIns.first { $0.config == config }?.displayName }
+    var presetName: String? { presets.matching(config)?.displayName }
+
+    /// What a click on the menu bar icon generates.
+    var menuBarPreset: Preset { presets.preset(id: settings.menuBarPresetID) ?? Preset.builtIns[0] }
 
     // MARK: Generating
 
@@ -55,6 +62,7 @@ final class AppModel: ObservableObject {
         mode = newMode
         settings.lastMode = newMode
         showsHistory = false
+        isNamingPreset = false
         regenerate()
     }
 
@@ -65,6 +73,14 @@ final class AppModel: ObservableObject {
         mode = newMode
         settings.lastMode = newMode
         regenerate()
+    }
+
+    /// Switches to `config`'s mode with exactly these settings (used by `hush://…&copy=0`).
+    func load(_ config: GeneratorConfig) {
+        configs[config.mode] = config
+        settings.store(config)
+        mode = config.mode
+        settings.lastMode = config.mode
     }
 
     func update(_ config: GeneratorConfig) {
@@ -100,6 +116,26 @@ final class AppModel: ObservableObject {
             o.bytes = clamp(o.bytes + delta * 4, KeyOptions.byteRange)
             update(.key(o))
         }
+    }
+
+    // MARK: Presets
+
+    func beginSavingPreset() {
+        showsHistory = false
+        isNamingPreset = true
+    }
+
+    /// A starting name such as "Random 24" or "Phrase 6".
+    var suggestedPresetName: String {
+        config.primarySize.map { "\(mode.title) \($0)" } ?? mode.title
+    }
+
+    @discardableResult
+    func savePreset(named name: String) -> Bool {
+        guard presets.add(name: name, config: config) != nil else { return false }
+        isNamingPreset = false
+        Toast.shared.show(String(localized: "Preset saved"), icon: .tag)
+        return true
     }
 
     // MARK: Delivering

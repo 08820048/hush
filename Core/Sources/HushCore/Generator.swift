@@ -96,3 +96,33 @@ public enum Generator {
         return Secret(value: value, config: secret.config, entropyBits: secret.entropyBits)
     }
 }
+
+extension GeneratorConfig {
+    /// The main size knob of each mode: characters (random), words (passphrase), digits (PIN),
+    /// groups (pronounceable) or bytes (key). `nil` for UUID keys, which have a fixed size.
+    public var primarySize: Int? {
+        switch self {
+        case .random(let o): o.length
+        case .passphrase(let o): o.wordCount
+        case .pin(let o): o.length
+        case .pronounceable(let o): o.groups
+        case .key(let o): o.format == .uuid ? nil : o.bytes
+        }
+    }
+
+    /// Returns a copy with the main size set to `size`, or throws if it is out of range.
+    public func withPrimarySize(_ size: Int) throws -> GeneratorConfig {
+        func check(_ range: ClosedRange<Int>) throws {
+            guard range.contains(size) else { throw GeneratorError.lengthOutOfRange(range) }
+        }
+        switch self {
+        case .random(var o): try check(RandomOptions.lengthRange); o.length = size; return .random(o)
+        case .passphrase(var o): try check(PassphraseOptions.wordCountRange); o.wordCount = size; return .passphrase(o)
+        case .pin(var o): try check(PINOptions.lengthRange); o.length = size; return .pin(o)
+        case .pronounceable(var o): try check(PronounceableOptions.groupRange); o.groups = size; return .pronounceable(o)
+        case .key(var o):
+            guard o.format != .uuid else { return self }
+            try check(KeyOptions.byteRange); o.bytes = size; return .key(o)
+        }
+    }
+}

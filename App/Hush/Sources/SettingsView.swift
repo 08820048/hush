@@ -5,11 +5,12 @@ import SwiftUI
 @MainActor
 final class SettingsWindowController {
     private(set) var window: NSWindow?
-    private var hosting: NSHostingController<AnyView>?
     private let settings: AppSettings
+    private let presets: PresetStore
 
-    init(settings: AppSettings) {
+    init(settings: AppSettings, presets: PresetStore) {
         self.settings = settings
+        self.presets = presets
     }
 
     /// The page a newly created window opens on (used by the snapshot renderer).
@@ -18,16 +19,15 @@ final class SettingsWindowController {
     func show() {
         let window = self.window ?? makeWindow()
         self.window = window
-        fitToPage()
         window.presentOnMouseScreen()
-        // Nothing should look focused when the window opens (no focus ring on the first tab,
+        // Nothing should look focused when the window opens (no focus ring on the sidebar,
         // and the shortcut recorders must not start recording on their own).
         window.makeFirstResponder(nil)
     }
 
     private func makeWindow() -> NSWindow {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: SettingsView.width, height: 460),
+            contentRect: NSRect(x: 0, y: 0, width: SettingsView.width, height: contentHeight()),
             styleMask: [.titled, .closable, .fullSizeContentView],
             backing: .buffered,
             defer: true
@@ -39,29 +39,23 @@ final class SettingsWindowController {
         window.title = String(localized: "Hush Settings")
         window.backgroundColor = NSColor(Palette.surface)
 
-        let hosting = NSHostingController(rootView: AnyView(SettingsView(page: page) { [weak self] in
-            // Measure after SwiftUI has applied the new page.
-            DispatchQueue.main.async { self?.fitToPage() }
-        }.environmentObject(settings)))
-        // The window size is driven by `fitToPage()`; the hosting view must not impose its own.
+        let hosting = NSHostingController(rootView: SettingsView(page: page).environmentObject(settings).environmentObject(presets))
+        // The window keeps the size set here; the hosting view must not impose its own.
         hosting.sizingOptions = []
         window.contentViewController = hosting
-        window.setContentSize(NSSize(width: SettingsView.width, height: 460))
-        self.hosting = hosting
+        window.setContentSize(NSSize(width: SettingsView.width, height: contentHeight()))
         return window
     }
 
-    /// Grows or shrinks the window to fit the current page, keeping its top edge in place.
-    private func fitToPage() {
-        guard let window, let hosting else { return }
-        let height = hosting.sizeThatFits(in: CGSize(width: SettingsView.width, height: 10_000)).height
-        let limit = (window.screen?.visibleFrame.height ?? 900) - 40
-        let target = min(height.rounded(.up), limit)
-        var frame = window.frame
-        guard abs(frame.height - target) > 0.5 else { return }
-        frame.origin.y += frame.height - target
-        frame.size.height = target
-        window.setFrame(frame, display: true, animate: window.isVisible)
+    /// Tall enough for the tallest page, so switching pages never resizes the window.
+    private func contentHeight() -> CGFloat {
+        let width = SettingsView.contentWidth
+        let tallest = SettingsPage.allCases.map { page in
+            NSHostingController(rootView: SettingsPageContent(page: page).environmentObject(settings).environmentObject(presets).frame(width: width))
+                .sizeThatFits(in: CGSize(width: width, height: 10_000)).height
+        }.max() ?? 480
+        // Long custom preset lists scroll instead of growing the window past this.
+        return min(tallest, 640).rounded(.up)
     }
 }
 
@@ -92,61 +86,55 @@ enum SettingsPage: String, CaseIterable, Identifiable {
     }
 }
 
-/// One continuous surface: the tab row sits in the title bar next to the window controls,
-/// the page flows directly underneath, and the window is exactly as tall as the page.
+/// One continuous surface: a sidebar on the same background as the page (no tinted column,
+/// no divider), with the selected page lifted as a raised tile. The window has a fixed height
+/// that fits the tallest page, so switching pages never resizes it.
 struct SettingsView: View {
-    static let width: CGFloat = 660
-    private let onPageChange: @MainActor () -> Void
+    static let width: CGFloat = 760
+    static let sidebarWidth: CGFloat = 188
+    static var contentWidth: CGFloat { width - sidebarWidth }
 
     @State private var page: SettingsPage
 
-    init(page: SettingsPage = .general, onPageChange: @escaping @MainActor () -> Void = {}) {
+    init(page: SettingsPage = .general) {
         _page = State(initialValue: page)
-        self.onPageChange = onPageChange
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            tabs
-            VStack(alignment: .leading, spacing: 14) {
-                switch page {
-                case .general: GeneralPage()
-                case .privacy: PrivacyPage()
-                case .presets: PresetsPage()
-                case .appearance: AppearancePage()
-                case .advanced: AdvancedPage()
-                case .developer: DeveloperPage()
-                }
+        HStack(alignment: .top, spacing: 0) {
+            sidebar
+            ScrollView {
+                SettingsPageContent(page: page)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
             }
-            .padding(.horizontal, 28)
-            .padding(.top, 6)
-            .padding(.bottom, 28)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .scrollIndicators(.automatic)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        .fixedSize(horizontal: false, vertical: true)
-        .onChange(of: page) { onPageChange() }
         .frame(width: Self.width)
+        .frame(maxHeight: .infinity)
         .background(Palette.surface)
         .ignoresSafeArea()
         .focusEffectDisabled()
     }
 
-    private var tabs: some View {
-        HStack(spacing: 4) {
+    private var sidebar: some View {
+        VStack(alignment: .leading, spacing: 2) {
             ForEach(SettingsPage.allCases) { item in
                 Button { page = item } label: {
-                    VStack(spacing: 4) {
-                        GlassIcon(icon: item.icon, size: 26, muted: page != item)
+                    HStack(spacing: 10) {
+                        GlassIcon(icon: item.icon, size: 20, muted: page != item)
                         Text(item.title)
-                            .font(.system(size: 11, weight: page == item ? .medium : .regular))
+                            .font(.system(size: 13, weight: page == item ? .medium : .regular))
                             .foregroundStyle(page == item ? Palette.ink : Palette.muted)
+                        Spacer(minLength: 0)
                     }
-                    .frame(width: 76, height: 56)
+                    .padding(.horizontal, 10)
+                    .frame(height: 34)
                     .background {
                         if page == item {
-                            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(Palette.raised)
-                                .overlay(RoundedHairline(cornerRadius: 9, color: Palette.line))
+                                .overlay(RoundedHairline(cornerRadius: 8, color: Palette.line))
                                 .shadow(color: .black.opacity(0.04), radius: 1.5, y: 1)
                         }
                     }
@@ -157,9 +145,36 @@ struct SettingsView: View {
                 .accessibilityAddTraits(page == item ? .isSelected : [])
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 10)
-        .padding(.bottom, 16)
+        .padding(.top, 52) // clears the window controls
+        .padding(.horizontal, 14)
+        .frame(width: Self.sidebarWidth)
+        .frame(maxHeight: .infinity, alignment: .top)
+    }
+}
+
+/// The right-hand column: page title and its settings.
+struct SettingsPageContent: View {
+    let page: SettingsPage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text(page.title)
+                .font(.system(size: 20, weight: .medium))
+                .foregroundStyle(Palette.ink)
+                .padding(.bottom, 2)
+            switch page {
+            case .general: GeneralPage()
+            case .privacy: PrivacyPage()
+            case .presets: PresetsPage()
+            case .appearance: AppearancePage()
+            case .advanced: AdvancedPage()
+            case .developer: DeveloperPage()
+            }
+        }
+        .padding(.leading, 6)
+        .padding(.trailing, 28)
+        .padding(.top, 46)
+        .padding(.bottom, 28)
     }
 }
 
@@ -167,6 +182,7 @@ struct SettingsView: View {
 
 private struct GeneralPage: View {
     @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var presets: PresetStore
 
     var body: some View {
         SettingsGroup {
@@ -181,7 +197,7 @@ private struct GeneralPage: View {
             Divider().padding(.leading, 42)
             SettingRow(icon: .copy, title: String(localized: "Click the menu bar icon"), detail: String(localized: "Generates and copies with this preset")) {
                 Picker("", selection: $settings.menuBarPresetID) {
-                    ForEach(Preset.builtIns) { Text($0.displayName).tag($0.id) }
+                    ForEach(presets.all) { Text($0.displayName).tag($0.id) }
                 }
                 .labelsHidden()
                 .frame(width: 150)
@@ -245,18 +261,83 @@ private struct PrivacyPage: View {
 }
 
 private struct PresetsPage: View {
+    @EnvironmentObject private var settings: AppSettings
+    @EnvironmentObject private var presets: PresetStore
+    @State private var renaming: Preset?
+    @State private var newName = ""
+
     var body: some View {
         SettingsGroup {
             ForEach(Array(Preset.builtIns.enumerated()), id: \.element.id) { index, preset in
                 if index > 0 { Divider().padding(.leading, 42) }
-                SettingRow(icon: preset.config.mode.icon, title: preset.displayName, detail: "\(preset.config.mode.title) · \(Int(preset.config.entropyBits.rounded())) bits") {
-                    if let name = KeyboardShortcuts.Name.presetShortcuts[preset.id] {
-                        KeyboardShortcuts.Recorder(for: name)
-                    }
+                row(preset)
+            }
+        }
+
+        Text("My presets").font(.system(size: 13, weight: .medium)).foregroundStyle(Palette.ink).padding(.top, 6)
+        if presets.custom.isEmpty {
+            HStack(spacing: 14) {
+                GlassIcon(icon: .tag, size: 28)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("No presets of your own yet").font(.system(size: 13)).foregroundStyle(Palette.ink)
+                    Text("In the panel, set things up the way you like, then choose Save as Preset… from the preset menu (⌘S).")
+                        .font(.system(size: 12)).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(16)
+            .background(Palette.raised, in: RoundedRectangle(cornerRadius: Radius.md, style: .continuous))
+            .overlay(RoundedHairline(cornerRadius: Radius.md, color: Palette.line))
+        } else {
+            SettingsGroup {
+                ForEach(Array(presets.custom.enumerated()), id: \.element.id) { index, preset in
+                    if index > 0 { Divider().padding(.leading, 42) }
+                    row(preset)
                 }
             }
         }
-        Text("Press a preset’s shortcut anywhere to generate and copy it. In the panel, ⌘1–⌘6 switch presets.").font(.system(size: 12)).foregroundStyle(Palette.muted)
+
+        Text("Press a preset’s shortcut anywhere to generate and copy it. In the panel, ⌘1–⌘9 switch presets.")
+            .font(.system(size: 12)).foregroundStyle(Palette.muted)
+            .alert("Rename Preset", isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
+                TextField("Name", text: $newName)
+                Button("Rename") {
+                    if let renaming { presets.rename(renaming.id, to: newName) }
+                    renaming = nil
+                }
+                Button("Cancel", role: .cancel) { renaming = nil }
+            }
+    }
+
+    private func row(_ preset: Preset) -> some View {
+        SettingRow(icon: preset.icon, title: preset.displayName, detail: "\(preset.config.mode.title) · \(Int(preset.config.entropyBits.rounded())) bits") {
+            HStack(spacing: 8) {
+                KeyboardShortcuts.Recorder(for: .preset(preset.id))
+                if !preset.isBuiltIn { actions(for: preset) }
+            }
+        }
+    }
+
+    private func actions(for preset: Preset) -> some View {
+        Menu {
+            Button("Rename…") {
+                newName = preset.name
+                renaming = preset
+            }
+            Button("Move Up") { presets.move(preset.id, by: -1) }.disabled(!presets.canMove(preset.id, by: -1))
+            Button("Move Down") { presets.move(preset.id, by: 1) }.disabled(!presets.canMove(preset.id, by: 1))
+            Divider()
+            Button("Delete", role: .destructive) {
+                if settings.menuBarPresetID == preset.id { settings.menuBarPresetID = Preset.builtIns[0].id }
+                presets.delete(preset.id)
+            }
+        } label: {
+            Image(systemName: "ellipsis").font(.system(size: 12, weight: .medium)).foregroundStyle(Palette.muted)
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .help("More")
     }
 }
 

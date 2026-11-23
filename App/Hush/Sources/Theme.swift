@@ -241,10 +241,12 @@ enum Updates {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
     }
 
+    #if !APP_STORE
     @MainActor
     static func openReleasesPage() {
         NSWorkspace.shared.open(releasesURL)
     }
+    #endif
 }
 
 // MARK: - Hairlines

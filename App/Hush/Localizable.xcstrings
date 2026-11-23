@@ -1904,6 +1904,16 @@
         }
       }
     },
+    "Updates arrive through the Mac App Store. Hush itself never goes online." : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新通过 Mac App Store 自动获取。Hush 本身从不联网。"
+          }
+        }
+      }
+    },
     "Use" : {
       "localizations" : {
         "zh-Hans" : {

@@ -58,7 +58,9 @@ struct PanelView: View {
     private var footer: some View {
         HStack(spacing: 16) {
             Button(action: actions.copyAndClose) { Hint(key: "↩", label: String(localized: "Copy"), primary: true) }.buttonStyle(.plain)
+            #if !APP_STORE
             Button(action: actions.paste) { Hint(key: "⌘↩", label: model.targetAppName.map { String(localized: "Paste into \($0)") } ?? String(localized: "Paste")) }.buttonStyle(.plain)
+            #endif
             Button { model.regenerate() } label: { Hint(key: "␣", label: String(localized: "New")) }.buttonStyle(.plain)
             Button(action: actions.showLargeType) { Hint(key: "⌘L", label: String(localized: "Large Type")) }.buttonStyle(.plain)
             Spacer()

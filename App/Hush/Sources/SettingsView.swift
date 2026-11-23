@@ -409,10 +409,13 @@ private struct AppearancePage: View {
 }
 
 private struct AdvancedPage: View {
+    #if !APP_STORE
     @State private var trusted = PasteService.isTrusted
+    #endif
 
     var body: some View {
         SettingsGroup {
+            #if !APP_STORE
             SettingRow(icon: .open, title: String(localized: "Paste directly (⌘↩)"), detail: trusted ? String(localized: "Accessibility access granted") : String(localized: "Allow Hush in Privacy & Security › Accessibility. Until then, Hush only copies.")) {
                 if trusted {
                     Text("Allowed").font(.system(size: 12)).foregroundStyle(Palette.accentInk)
@@ -425,11 +428,14 @@ private struct AdvancedPage: View {
                 }
             }
             Divider().padding(.leading, 42)
+            #endif
             SettingRow(icon: .notrack, title: String(localized: "Clear clipboard now"), detail: String(localized: "Global shortcut. Only clears passwords Hush put there.")) {
                 KeyboardShortcuts.Recorder(for: .clearClipboard)
             }
         }
+        #if !APP_STORE
         .onReceive(Timer.publish(every: 2, on: .main, in: .common).autoconnect()) { _ in trusted = PasteService.isTrusted }
+        #endif
     }
 }
 
@@ -469,14 +475,24 @@ private struct AboutBlock: View {
                     Text("Open source (GPL-3.0) · EFF word list (CC BY 3.0)").font(.system(size: 11)).foregroundStyle(Palette.muted)
                 }
                 Spacer()
+                #if !APP_STORE
                 Button("Check for Updates…") { Updates.openReleasesPage() }
                     .buttonStyle(HushButtonStyle(tone: .secondary))
+                #endif
             }
-            Text("Hush never goes online, so it doesn’t check for updates by itself. The button opens the latest release on GitHub. If you installed with Homebrew, run brew upgrade --cask hush.")
+            Text(updateNote)
                 .font(.system(size: 11))
                 .foregroundStyle(Palette.muted)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.top, 8)
+    }
+
+    private var updateNote: LocalizedStringKey {
+        #if APP_STORE
+        "Updates arrive through the Mac App Store. Hush itself never goes online."
+        #else
+        "Hush never goes online, so it doesn’t check for updates by itself. The button opens the latest release on GitHub. If you installed with Homebrew, run brew upgrade --cask hush."
+        #endif
     }
 }

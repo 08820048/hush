@@ -80,6 +80,11 @@ open "hush://generate?mode=key&bytes=64&format=hex&copy=0"       # 密钥:bytes 
 
 **自定义预设**:在面板里调好设置,按 `⌘S` 存为预设;在设置的"预设"页可以重命名、排序、删除,并给它绑定全局快捷键。
 
+## 版本
+
+- **GitHub 版**:免费,在 [Releases](https://github.com/08820048/hush/releases/latest) 下载,功能完整(含 ⌘↩ 直接粘贴)。
+- **Mac App Store 版**(计划中):同一份代码,经 Apple 签名、通过 App Store 自动更新;受沙盒限制没有“直接粘贴”。上架流程见 [docs/APPSTORE.md](docs/APPSTORE.md)。
+
 ## 更新
 
 Hush 从不联网,所以**不会自动检查更新**。想更新时:

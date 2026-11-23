@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="{{lang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{pv_title}} · Hush</title>
+<meta name="description" content="{{pv_description}}">
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="{{site}}{{path}}privacy/">
+<link rel="alternate" hreflang="zh-Hans" href="{{site}}/privacy/">
+<link rel="alternate" hreflang="en" href="{{site}}/en/privacy/">
+<link rel="icon" type="image/png" href="/assets/favicon.png">
+<link rel="stylesheet" href="/styles.css?v={{build}}">
+</head>
+<body>
+<div class="nav">
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="{{path}}"><img src="/assets/app-icon.png" alt="">Hush</a>
+      <nav>
+        <a href="{{path}}">{{pv_home}}</a>
+        <a href="{{repo}}">GitHub</a>
+        <a href="{{other_lang_path}}privacy/" hreflang="{{other_lang}}" lang="{{other_lang}}">{{other_lang_name}}</a>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<main class="legal gridded">
+  <div class="wrap">
+    <article>
+      <h1>{{pv_title}}</h1>
+      <p class="updated">{{pv_updated}}</p>
+      <p class="summary">{{pv_summary}}</p>
+      {{pv_body}}
+    </article>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>{{footer_license}}</p>
+    <p><a href="{{path}}">{{pv_home}}</a></p>
+  </div>
+</footer>
+</body>
+</html>

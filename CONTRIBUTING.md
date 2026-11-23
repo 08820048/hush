@@ -56,7 +56,13 @@ make snapshots  # 离屏渲染所有界面截图(调试版),检查布局用
 
 ## 贡献的授权
 
-Hush 以 [GNU GPL-3.0](LICENSE)(GPL-3.0-or-later)发布。提交贡献即表示你有权提交这些内容(是你本人的作品,或其许可证允许这样做),并同意你的贡献同样以 GPL-3.0-or-later 授权。
+Hush 以 [GNU GPL-3.0](LICENSE)(GPL-3.0-or-later)发布。提交贡献即表示:
+
+1. 你有权提交这些内容(是你本人的作品,或其许可证允许这样做);
+2. 你的贡献以 GPL-3.0-or-later 授权;
+3. 你同时授予项目维护者 XuYi 一项永久、全球、免费、非独占的许可,允许其通过 Mac App Store 等应用商店、按这些商店要求的条款(包括收费)分发包含你贡献的 Hush。
+
+需要第 3 条,是因为 App Store 的使用条款与 GPL 不兼容:没有这项许可,任何外部贡献都无法出现在 App Store 版本中。你的贡献在 GitHub 上始终以 GPL 开源。如果你不同意,请在 Pull Request 中说明。
 
 ---
 
@@ -90,4 +96,6 @@ UI strings live in `App/Hush/Localizable.xcstrings`; Siri phrases in `App/Hush/A
 
 ### Licensing of contributions
 
-Hush is licensed under the [GNU GPL-3.0](LICENSE) (GPL-3.0-or-later). By contributing, you confirm that you have the right to submit the work and that you license it under GPL-3.0-or-later.
+Hush is licensed under the [GNU GPL-3.0](LICENSE) (GPL-3.0-or-later). By contributing, you confirm that you have the right to submit the work, you license it under GPL-3.0-or-later, and you also grant the maintainer, XuYi, a perpetual, worldwide, royalty-free, non-exclusive license to distribute Hush including your contribution through app stores such as the Mac App Store, under the terms those stores require (including for a fee).
+
+The App Store's terms are not compatible with the GPL, so without this grant no outside contribution could ship in the App Store version. Your contribution always stays open source under the GPL on GitHub. If you do not agree, say so in your pull request.

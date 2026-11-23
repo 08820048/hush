@@ -6,6 +6,13 @@ options:
   createIntermediateGroups: true
   developmentLanguage: en
 
+# AppStore is a Release build with APP_STORE defined: no direct paste (needs Accessibility,
+# unavailable in the App Store sandbox) and no "Check for Updates" (the store updates it).
+configs:
+  Debug: debug
+  Release: release
+  AppStore: release
+
 packages:
   HushCore:
     path: ../Core
@@ -40,6 +47,8 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.utilities
+        # Only the system random number generator is used; no encryption to declare for export.
+        ITSAppUsesNonExemptEncryption: false
         NSHumanReadableCopyright: "© 2026 XuYi · GPL-3.0-or-later"
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [en, zh-Hans]
@@ -67,3 +76,24 @@ targets:
         SWIFT_STRICT_CONCURRENCY: complete
         SWIFT_EMIT_LOC_STRINGS: YES
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+      configs:
+        AppStore:
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: APP_STORE
+          # Signed with the Apple Distribution certificate when archiving for App Store Connect
+          # (scripts/appstore.sh passes the team and identity).
+          CODE_SIGN_STYLE: Automatic
+          CODE_SIGN_IDENTITY: Apple Distribution
+
+schemes:
+  Hush App Store:
+    build:
+      targets:
+        Hush: all
+    run:
+      config: AppStore
+    profile:
+      config: AppStore
+    analyze:
+      config: AppStore
+    archive:
+      config: AppStore

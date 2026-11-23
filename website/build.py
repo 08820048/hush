@@ -32,29 +32,35 @@ common = {
     "build": str(int(time.time())),
 }
 
-template = (SRC / "index.html").read_text()
-keys = set(re.findall(r"{{(\w+)}}", template))
+# (template, sub-path under each language's root)
+PAGES = [("index.html", ""), ("privacy.html", "privacy/")]
 
 shutil.rmtree(DIST, ignore_errors=True)
 shutil.copytree(SRC / "assets", DIST / "assets")
 for name in ("styles.css", "demo.js"):
     shutil.copy(SRC / name, DIST / name)
 
+urls = []
 for strings_file in sorted((SRC / "strings").glob("*.json")):
     values = {**common, **json.loads(strings_file.read_text())}
-    missing = keys - values.keys()
-    if missing:
-        raise SystemExit(f"{strings_file.name}: missing {sorted(missing)}")
-    # Values may contain <br> and links; attributes get escaped versions.
-    page = template
-    for key in keys:
-        value = values[key]
-        page = re.sub(r'(=")({{%s}})' % key, lambda m: m.group(1) + html.escape(re.sub("<[^>]+>", " ", value), quote=True), page)
-        page = page.replace("{{%s}}" % key, value)
-    out = DIST / values["path"].strip("/") / "index.html"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(page)
-    print(f"{out.relative_to(ROOT)}  ({strings_file.stem}, v{version})")
+    for template_name, sub in PAGES:
+        template = (SRC / template_name).read_text()
+        keys = set(re.findall(r"{{(\w+)}}", template))
+        missing = keys - values.keys()
+        if missing:
+            raise SystemExit(f"{strings_file.name} / {template_name}: missing {sorted(missing)}")
+        page = template
+        for key in keys:
+            value = values[key]
+            # Inside attributes, use a tag-free, escaped version; elsewhere values may hold HTML.
+            page = re.sub(r'(=")({{%s}})' % key, lambda m: m.group(1) + html.escape(re.sub("<[^>]+>", " ", value).strip(), quote=True), page)
+            page = page.replace("{{%s}}" % key, value)
+        url_path = values["path"] + sub
+        out = DIST / url_path.strip("/") / "index.html"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(page)
+        urls.append(url_path)
+        print(f"{out.relative_to(ROOT)}  ({strings_file.stem}, v{version})")
 
 # Cloudflare Pages: security headers and caching. Everything is first-party, so the policy is strict.
 (DIST / "_headers").write_text("""/*
@@ -69,5 +75,6 @@ for strings_file in sorted((SRC / "strings").glob("*.json")):
 (DIST / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {SITE}/sitemap.xml\n")
 (DIST / "sitemap.xml").write_text(
     '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    f"  <url><loc>{SITE}/</loc></url>\n  <url><loc>{SITE}/en/</loc></url>\n</urlset>\n"
+    + "".join(f"  <url><loc>{SITE}{u}</loc></url>\n" for u in sorted(urls))
+    + "</urlset>\n"
 )

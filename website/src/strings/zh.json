@@ -121,5 +121,12 @@
   "install_note": "目前的版本还没有用 Apple 开发者证书签名。第一次打开时 macOS 会拦截:打开一次后,到“系统设置 › 隐私与安全性”点击“仍要打开”即可。Hush 从不联网,所以不会自动更新,新版本发布后在这里下载替换就行。",
   "footer_license": "© 2026 XuYi · Hush 是自由软件,以 <a href=\"https://github.com/08820048/hush/blob/main/LICENSE\">GNU GPL-3.0</a> 许可证发布。",
   "footer_credits": "短语词库来自 EFF(CC BY 3.0)· 网站密码规则来自 Apple password-manager-resources(MIT)· 图标为 Glass 图标集",
-  "footer_privacy": "本网站没有 Cookie、没有统计脚本,也不加载任何第三方资源。"
+  "footer_privacy": "本网站没有 Cookie、没有统计脚本,也不加载任何第三方资源。",
+  "pv_title": "隐私政策",
+  "pv_description": "Hush 不收集、不上传任何数据。本页说明 Hush App 和本网站如何处理信息。",
+  "pv_home": "返回首页",
+  "pv_updated": "生效日期:2026 年 11 月 23 日",
+  "pv_summary": "一句话:Hush 不收集任何数据,也无法收集——App 在沙盒中没有联网权限。",
+  "pv_body": "\n<h2>Hush App(Mac App Store 版与 GitHub 版)</h2>\n<h3>我们收集的数据</h3>\n<p>没有。Hush 不包含任何统计、分析、广告或崩溃上报功能,也没有账号系统。App 运行在 macOS 沙盒中,没有申请网络权限,因此无法向任何服务器发送数据。</p>\n<h3>保存在你 Mac 上的内容</h3>\n<ul>\n<li><strong>设置与预设</strong>:例如密码长度、字符类型、快捷键、自定义预设。它们保存在 App 自己的沙盒容器中(macOS 偏好设置),只用于记住你的选择。<strong>其中不包含任何密码。</strong></li>\n<li><strong>生成的密码</strong>:从不写入磁盘。可选的“临时历史”只保存在内存中,最多 10 条,5 分钟后、锁屏、睡眠或退出 App 时销毁。</li>\n<li><strong>剪贴板</strong>:你复制密码时,Hush 会把它放入系统剪贴板,并标记为“隐藏/临时”,让剪贴板管理工具不记录;到时自动清空(仅当剪贴板中仍是该密码时)。</li>\n</ul>\n<h3>权限</h3>\n<ul>\n<li><strong>你选择的文件</strong>:仅在你导入或导出预设时,读写你在“打开/存储”窗口中亲自选中的那个文件。</li>\n<li><strong>辅助功能(仅 GitHub 版)</strong>:用于“直接粘贴”(⌘↩)时向前台 App 发送一次 ⌘V,不读取其他 App 的内容。Mac App Store 版不包含此功能,也不会申请此权限。</li>\n</ul>\n<h3>与第三方共享</h3>\n<p>不共享。Hush 不包含任何第三方 SDK。内置的网站密码规则来自 Apple 的公开数据,随 App 一起分发,查询完全在本机进行。</p>\n<h3>“检查更新”(仅 GitHub 版)</h3>\n<p>点击后用你的默认浏览器打开 GitHub 上的发布页面。Hush 本身不会联网检查。Mac App Store 版通过 App Store 更新。</p>\n\n<h2>本网站(hushpass.fyi)</h2>\n<p>本网站没有 Cookie、没有统计或跟踪脚本,也不加载任何第三方资源(包括字体)。网站托管在 Cloudflare Pages:和所有网站托管服务一样,Cloudflare 可能为了安全和防止滥用而处理访问日志(如 IP 地址),详见 <a href=\"https://www.cloudflare.com/privacypolicy/\">Cloudflare 隐私政策</a>。下载 App 时会跳转到 GitHub,适用 <a href=\"https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement\">GitHub 隐私声明</a>。</p>\n\n<h2>儿童隐私</h2>\n<p>Hush 不收集任何人的个人信息,包括儿童。</p>\n\n<h2>变更与联系</h2>\n<p>如果本政策有变化,我们会更新本页并修改上方的生效日期;变更记录可在 <a href=\"https://github.com/08820048/hush/commits/main/website\">GitHub</a> 上查看。有任何问题,请在 <a href=\"https://github.com/08820048/hush/issues\">GitHub Issues</a> 中提出。</p>\n",
+  "pv_link": "隐私政策"
 }

@@ -97,6 +97,7 @@ final class ClipboardService: ObservableObject {
 
 // MARK: - Direct paste
 
+#if !APP_STORE
 /// Sends ⌘V to the app that was frontmost when the panel opened. Needs Accessibility permission.
 enum PasteService {
     static var isTrusted: Bool { AXIsProcessTrusted() }
@@ -124,6 +125,7 @@ enum PasteService {
         up?.post(tap: .cgAnnotatedSessionEventTap)
     }
 }
+#endif
 
 // MARK: - Ephemeral history
 

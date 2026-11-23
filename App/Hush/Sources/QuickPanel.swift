@@ -231,11 +231,13 @@ struct QuickPanelView: View {
         HStack(spacing: 2) {
             QuickFooterAction(icon: .open, title: String(localized: "Full Panel ⌥⌘P"), action: actions.openMainPanel)
             QuickFooterAction(icon: .gear, title: String(localized: "Settings"), action: actions.openSettings)
+            #if !APP_STORE
             QuickFooterAction(icon: .globe, title: String(localized: "Updates")) {
                 actions.close()
                 Updates.openReleasesPage()
             }
             .help("Opens the latest release on GitHub. Hush itself never goes online.")
+            #endif
             Spacer()
             Button("Quit") { NSApp.terminate(nil) }
                 .buttonStyle(.plain)

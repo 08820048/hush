@@ -100,6 +100,10 @@ final class PanelController: NSObject, NSWindowDelegate {
     }
 
     private func pasteIntoTarget() {
+        #if APP_STORE
+        // The App Store build is sandboxed without Accessibility, so ⌘↩ simply copies.
+        copyAndClose()
+        #else
         model.copyCurrent()
         hide()
         guard PasteService.isTrusted else {
@@ -111,6 +115,7 @@ final class PanelController: NSObject, NSWindowDelegate {
             try? await Task.sleep(for: .milliseconds(80))
             PasteService.pasteIntoFrontApp()
         }
+        #endif
     }
 
     private func openLargeType(_ page: LargeTypeController.Page) {

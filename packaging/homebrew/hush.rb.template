@@ -12,4 +12,11 @@ cask "hush" do
   app "Hush.app"
 
   zap trash: "~/Library/Containers/dev.hushapp.Hush"
+
+  caveats <<~EOS
+    Hush is not signed with an Apple Developer ID yet, so macOS blocks the first launch.
+    Open Hush once, then click "Open Anyway" in
+    System Settings › Privacy & Security, or run:
+      xattr -dr com.apple.quarantine "#{appdir}/Hush.app"
+  EOS
 end

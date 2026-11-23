@@ -12,12 +12,14 @@
 #   NOTARY_KEY_PATH=/path/AuthKey.p8 NOTARY_KEY_ID=... NOTARY_ISSUER=...
 #
 # Usage: scripts/release.sh [version]     (default: MARKETING_VERSION from App/project.yml)
+# BUILD_NUMBER sets CFBundleVersion (CI passes the workflow run number; default 1).
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 ROOT=$PWD
 VERSION=${1:-$(awk '/MARKETING_VERSION:/ {print $2; exit}' App/project.yml)}
 VERSION=${VERSION#v}
+BUILD_NUMBER=${BUILD_NUMBER:-1}
 DIST=$ROOT/dist
 BUILD=$ROOT/.build/release-app
 APP=$BUILD/Build/Products/Release/Hush.app
@@ -38,10 +40,12 @@ notarize() { # notarize <zip>
     fi
 }
 
+scripts/check-version.sh "$VERSION"
+
 rm -rf "$DIST"
 mkdir -p "$DIST"
 
-log "Hush $VERSION ($([[ $SIGNED == 1 ]] && echo "Developer ID" || echo "ad-hoc, not for distribution"))"
+log "Hush $VERSION build $BUILD_NUMBER ($([[ $SIGNED == 1 ]] && echo "Developer ID" || echo "ad-hoc, not for distribution"))"
 
 log "Testing HushCore"
 swift test --package-path Core
@@ -54,7 +58,7 @@ if [[ $SIGNED == 1 ]]; then
 fi
 xcodebuild -project App/Hush.xcodeproj -scheme Hush -configuration Release \
     -derivedDataPath "$BUILD" ONLY_ACTIVE_ARCH=NO \
-    MARKETING_VERSION="$VERSION" "${SIGN_ARGS[@]}" \
+    MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" "${SIGN_ARGS[@]}" \
     clean build | grep -E "error:|warning: |BUILD" || true
 [[ -d "$APP" ]] || { echo "error: app build failed" >&2; exit 1; }
 

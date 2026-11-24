@@ -79,7 +79,13 @@ targets:
         SWIFT_EMIT_LOC_STRINGS: YES
         LOCALIZATION_PREFERS_STRING_CATALOGS: YES
       configs:
+        # Distribution builds must not carry com.apple.security.get-task-allow (it lets a debugger,
+        # or any same-user process, attach and read memory; notarization rejects it). `xcodebuild
+        # build` injects it unless this is off; only Debug keeps it.
+        Release:
+          CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
         AppStore:
+          CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
           SWIFT_ACTIVE_COMPILATION_CONDITIONS: APP_STORE
           # Signed with the Apple Distribution certificate when archiving for App Store Connect
           # (scripts/appstore.sh passes the team and identity).

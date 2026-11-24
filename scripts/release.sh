@@ -87,6 +87,11 @@ fi
 APP_ZIP="$DIST/Hush-$VERSION.zip"
 CLI_ZIP="$DIST/hush-cli-$VERSION.zip"
 
+if codesign -d --entitlements - --xml "$APP" 2>/dev/null | grep -q "get-task-allow"; then
+    echo "error: the app carries com.apple.security.get-task-allow; distribution builds must not be debuggable" >&2
+    exit 1
+fi
+
 if [[ $SIGNED == 1 ]]; then
     log "Notarizing Hush.app"
     ditto -c -k --keepParent "$APP" "$DIST/notarize-app.zip"
@@ -107,7 +112,9 @@ ditto -c -k --keepParent "$APP" "$APP_ZIP"
 
 log "Verifying"
 codesign --verify --deep --strict "$APP"
-codesign -d --entitlements - "$APP" 2>/dev/null | grep -q "network" && { echo "error: network entitlement found" >&2; exit 1; }
+ENTITLEMENTS=$(codesign -d --entitlements - --xml "$APP" 2>/dev/null)
+grep -q "network" <<<"$ENTITLEMENTS" && { echo "error: network entitlement found" >&2; exit 1; }
+grep -q "get-task-allow" <<<"$ENTITLEMENTS" && { echo "error: get-task-allow entitlement found (debuggable build)" >&2; exit 1; }
 lipo -archs "$APP/Contents/MacOS/Hush"
 if [[ $SIGNED == 1 ]]; then spctl --assess --type execute --verbose "$APP"; fi
 

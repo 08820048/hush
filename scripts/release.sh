@@ -30,12 +30,24 @@ if [[ -n "${DEVELOPER_ID:-}" && -n "${TEAM_ID:-}" ]]; then SIGNED=1; fi
 log() { printf '\033[1m==> %s\033[0m\n' "$*"; }
 
 notarize() { # notarize <zip>
+    local auth
     if [[ -n "${NOTARY_PROFILE:-}" ]]; then
-        xcrun notarytool submit "$1" --keychain-profile "$NOTARY_PROFILE" --wait
+        auth=(--keychain-profile "$NOTARY_PROFILE")
     elif [[ -n "${NOTARY_KEY_PATH:-}" ]]; then
-        xcrun notarytool submit "$1" --key "$NOTARY_KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER" --wait
+        auth=(--key "$NOTARY_KEY_PATH" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER")
     else
         echo "error: DEVELOPER_ID is set but no notarization credentials (NOTARY_PROFILE or NOTARY_KEY_PATH)" >&2
+        exit 1
+    fi
+    local result id status
+    result=$(xcrun notarytool submit "$1" "${auth[@]}" --wait --output-format json)
+    echo "$result"
+    id=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])' <<<"$result")
+    status=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["status"])' <<<"$result")
+    if [[ "$status" != Accepted ]]; then
+        # Apple's log names each file and the exact problem; show it instead of failing silently.
+        echo "error: notarization $status — Apple's log:" >&2
+        xcrun notarytool log "$id" "${auth[@]}" >&2 || true
         exit 1
     fi
 }

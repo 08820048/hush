@@ -15,7 +15,7 @@ git push origin main v0.2.0
 
 1. **检查版本**:标签必须和代码中的版本号一致(`App/project.yml` 的 `MARKETING_VERSION`、`Sources/hush/Hush.swift` 的 `version`)。不一致时直接失败,并提示运行 `scripts/bump-version.sh`。
 2. **测试和构建**:运行核心测试;构建通用二进制(Apple 芯片 + Intel)的 `Hush.app` 和 `hush` 命令行工具;检查 App 没有网络权限。构建号(`CFBundleVersion`)使用工作流的运行编号。
-3. **发布**:根据上一个标签到这个标签之间的提交生成更新日志,附上下载说明和未签名 App 的打开方法(中英文),创建 GitHub Release。产物为 `Hush-<版本>.zip`、`hush-cli-<版本>.zip`、`SHA256SUMS.txt`。
+3. **发布**:根据上一个标签到这个标签之间的提交生成更新日志,附上下载与安装说明(中英文;未签名时附上打开方法),创建 GitHub Release。产物为 `Hush-<版本>.zip`、`hush-cli-<版本>.zip`、`SHA256SUMS.txt`。
 4. **Homebrew**(可选):见下文。
 
 - 带后缀的标签(如 `v0.2.0-beta.1`)会发布为**预发布版**,不更新 Homebrew。

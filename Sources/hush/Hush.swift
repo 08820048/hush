@@ -7,7 +7,7 @@ struct Hush: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "hush",
         abstract: "Quietly generate strong passwords, passphrases, PINs and keys. Offline, nothing stored.",
-        version: "0.2.0",
+        version: "1.0.0",
         subcommands: [RandomCommand.self, PhraseCommand.self, PINCommand.self, SayCommand.self, KeyCommand.self, PresetsCommand.self],
         defaultSubcommand: RandomCommand.self
     )

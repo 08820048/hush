@@ -118,7 +118,7 @@
   "closing_title": "Shh.<br>Leave passwords to Hush.",
   "closing_sub": "Free · Open source · Offline · macOS 14 or later",
   "all_releases": "All releases and notes",
-  "install_note": "Builds are not signed with an Apple Developer ID yet, so macOS blocks the first launch: open Hush once, then click “Open Anyway” in System Settings › Privacy & Security. Hush never goes online, so it does not update itself; download new releases here.",
+  "install_note": "Signed with an Apple Developer ID and notarized by Apple: unzip, move it to Applications and open. Hush never goes online, so it does not update itself; download new releases here.",
   "footer_license": "© 2026 XuYi · Hush is free software, licensed under the <a href=\"https://github.com/08820048/hush/blob/main/LICENSE\">GNU GPL-3.0</a>.",
   "footer_credits": "Passphrase words from the EFF (CC BY 3.0) · Website rules from Apple password-manager-resources (MIT) · Glass icon set",
   "footer_privacy": "This site sets no cookies, runs no analytics and loads nothing from third parties.",

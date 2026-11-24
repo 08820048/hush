@@ -8,7 +8,7 @@ Hush 有两个版本,来自同一份代码:
 | 构建 | `make release` / 推送版本标签 | `make appstore`(方案 “Hush App Store”,配置 `AppStore`) |
 | 直接粘贴(⌘↩) | 有(需要“辅助功能”权限) | **没有**:沙盒应用拿不到辅助功能权限,⌘↩ 等同于复制 |
 | 检查更新 | 打开 GitHub 发布页 | **没有**:Mac 应用只能通过 App Store 更新 |
-| 签名 | 暂未签名 | Apple Distribution 证书 |
+| 签名 | Developer ID 签名并经 Apple 公证 | Apple Distribution 证书 |
 
 两者的差异由编译条件 `APP_STORE` 控制,相关代码在 App Store 版中不会被编译进去;`scripts/appstore.sh` 会检查归档里不含辅助功能相关的调用。
 

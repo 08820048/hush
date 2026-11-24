@@ -5,7 +5,15 @@ Notable changes to Hush. Format based on Keep a Changelog; versions follow Seman
 
 ## [未发布 · Unreleased]
 
+## [1.0.0] - 2026-11-24
+
+### 安全 · Security
+- 修复:GitHub 发布的 App 带有调试权限 `com.apple.security.get-task-allow`,同一用户下的其他程序可以附加到 Hush 并读取其内存。v0.1.0 与 v0.2.0 受影响,请升级。Mac App Store 版不受影响。
+  Fixed: GitHub builds carried `com.apple.security.get-task-allow`, letting same-user processes attach and read Hush's memory. 0.1.0 and 0.2.0 are affected; please upgrade.
+
 ### 变更 · Changed
+- GitHub 发布的 App 与命令行工具现在使用 Apple Developer ID 签名并经过 Apple 公证,下载后可以直接打开。
+  GitHub releases are now signed with Developer ID and notarized by Apple; they open without warnings.
 - 许可证由 MIT 改为 [GPL-3.0-or-later](LICENSE):分发修改版必须同样开源。v0.1.0 与 v0.2.0 仍按 MIT 提供。
   License changed from MIT to GPL-3.0-or-later. Releases 0.1.0 and 0.2.0 remain available under MIT.
 
@@ -34,6 +42,7 @@ Notable changes to Hush. Format based on Keep a Changelog; versions follow Seman
 - 首个版本:随机、短语、PIN、可读、密钥五种模式;键盘优先的面板(⌥⌘P);剪贴板保护与自动清空;临时历史;大字显示与 Wi-Fi 二维码;自定义预设与全局快捷键;`hush://` 链接与快捷指令;命令行工具 `hush`;简体中文与英文。
   First release.
 
-[未发布 · Unreleased]: https://github.com/08820048/hush/compare/v0.2.0...HEAD
+[未发布 · Unreleased]: https://github.com/08820048/hush/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/08820048/hush/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/08820048/hush/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/08820048/hush/releases/tag/v0.1.0

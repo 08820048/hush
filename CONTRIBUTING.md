@@ -23,7 +23,7 @@ make run        # 生成 Xcode 工程、构建并启动 App
 make snapshots  # 离屏渲染所有界面截图(调试版),检查布局用
 ```
 
-用 Xcode 开发时打开 `App/Hush.xcodeproj`(由 `App/project.yml` 生成,不要手动修改工程文件;新增文件后运行 `make project`)。
+用 Xcode 开发时打开 `App/Hush.xcodeproj`。工程文件由 `App/project.yml` 生成,不要在 Xcode 里修改工程设置;新增文件或修改 `project.yml` 后运行 `make project`,并把更新后的工程文件一起提交(Xcode Cloud 需要它)。
 
 ## 代码结构
 
@@ -77,7 +77,7 @@ Hush 以 [GNU GPL-3.0](LICENSE)(GPL-3.0-or-later)发布。提交贡献即表示:
 
 ### Setup
 
-macOS 14+, Xcode 16+ (Swift 6) and [XcodeGen](https://github.com/yonaskolb/XcodeGen). Then `make test`, `make cli`, `make run`, `make snapshots`. Open `App/Hush.xcodeproj` in Xcode; it is generated from `App/project.yml`, so run `make project` after adding files instead of editing the project.
+macOS 14+, Xcode 16+ (Swift 6) and [XcodeGen](https://github.com/yonaskolb/XcodeGen). Then `make test`, `make cli`, `make run`, `make snapshots`. Open `App/Hush.xcodeproj` in Xcode. It is generated from `App/project.yml`: run `make project` after adding files or editing `project.yml`, and commit the regenerated project (Xcode Cloud builds from it).
 
 ### Making a change
 

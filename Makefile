@@ -12,7 +12,7 @@ test:            ## Run HushCore tests
 cli:             ## Build the release CLI to .build/release/hush
 	swift build -c release --product hush
 
-project:         ## Generate App/Hush.xcodeproj (needs xcodegen)
+project:         ## Regenerate App/Hush.xcodeproj from App/project.yml (needs xcodegen); commit the result
 	cd App && xcodegen generate
 
 app: project     ## Build Hush.app (Debug)
@@ -43,4 +43,4 @@ deploy-site: site ## Deploy the website to Cloudflare Pages (needs wrangler logi
 	wrangler pages deploy website/dist --project-name hush-website --branch main
 
 clean:
-	rm -rf .build dist website/dist App/Hush.xcodeproj
+	rm -rf .build dist website/dist

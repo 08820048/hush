@@ -32,6 +32,26 @@ TEAM_ID=你的TeamID UPLOAD=1 make appstore  # 直接上传
 
 版本号沿用 `App/project.yml` 的 `MARKETING_VERSION`,构建号自动取当前时间。也可以用 Apple 的 Transporter App 上传导出的 `.pkg`。上传后先在 TestFlight 里自己装一遍,确认没问题再提交审核。
 
+## 用 Xcode Cloud 构建并上传(推荐)
+
+Xcode Cloud 在 Apple 的服务器上用**正式版 Xcode** 构建、云端签名,并直接上传到 App Store Connect / TestFlight,本机装的是测试版 Xcode 也没关系。仓库已经准备好:工程文件与依赖锁定文件(`Package.resolved`)已提交,工程里设置了 Team ID。
+
+**第一次设置**(在本机 Xcode 中完成,测试版 Xcode 也可以):
+
+1. 打开 `App/Hush.xcodeproj`,菜单 **Integrate › Create Workflow…**(旧版本在 Product › Xcode Cloud),选择 App **HushPass**。
+2. 按提示授权 Xcode Cloud 访问 GitHub 仓库 `08820048/hush`。
+3. 编辑工作流:
+   - **General**:名称如 “App Store Release”。
+   - **Environment**:Xcode 选 **Latest Release**,macOS 选 **Latest Release**。
+   - **Start Conditions**:删掉默认的“分支变更”,改为 **Tag Changes**,标签匹配 `v*`(每次推送版本标签时构建);也可以只保留手动开始。
+   - **Actions**:删掉默认动作,添加 **Archive – macOS**,Scheme 选 **Hush App Store**,Deployment Preparation 选 **App Store Connect**。
+   - **Post-Actions**:添加 **TestFlight Internal Testing**,选你自己所在的测试组。
+4. 保存后点 **Start Build**。构建号由 Xcode Cloud 自动递增,无需手动修改。
+
+**之后每个版本**:运行 `scripts/bump-version.sh` 并推送版本标签,GitHub Actions 发布 GitHub 版,Xcode Cloud 同时构建 App Store 版并送到 TestFlight;在 TestFlight 里确认后,到 App Store Connect 提交审核。
+
+本机命令 `make appstore` 仍然可用(需要正式版 Xcode),作为 Xcode Cloud 之外的备用方式。
+
 ## App Store Connect 里要填的内容
 
 | 项目 | 填写 |

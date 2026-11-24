@@ -20,7 +20,8 @@ Hush 有两个版本,来自同一份代码:
 2. **注册 Bundle ID** `fyi.hushpass.Hush`(项目已使用这个 ID,上架后不能修改)。在 [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list) 注册这个 App ID。
 3. **在 App Store Connect 新建 App**:平台 macOS,Bundle ID 选上一步的,SKU 随意(如 `hush-mac`)。
    - **名称**:**HushPass**(与域名 hushpass.fyi 一致;App Store 名称必须唯一,“Hush” 很可能已被占用)。副标题建议:中文“安静、离线的密码生成器”,英文 “Quiet, offline password generator”。安装后 App 本身仍显示为 Hush。
-4. **协议、税务和银行**:在 App Store Connect › 业务 中签署“付费 App 协议”,填写税务和收款信息。收费 App 必须完成这一步。
+4. **接受最新协议**:先在 developer.apple.com › Account 接受最新的 Apple Developer Program License Agreement,再到 App Store Connect › 业务 接受“付费 App 协议”(Paid Applications Schedule)。
+5. **协议、税务和银行**:在 App Store Connect › 业务 中签署“付费 App 协议”,填写税务和收款信息。收费 App 必须完成这一步。
 
 ## 每个版本
 
@@ -35,7 +36,8 @@ TEAM_ID=你的TeamID UPLOAD=1 make appstore  # 直接上传
 
 | 项目 | 填写 |
 |---|---|
-| 销售范围 | 取消勾选 **中国大陆**(其他地区不需要 ICP 备案) |
+| 销售范围 | 取消勾选 **中国大陆**(避免 App 备案、AIGC 声明与安全评估)和 **欧盟 27 国**(奥地利、比利时、保加利亚、克罗地亚、塞浦路斯、捷克、丹麦、爱沙尼亚、芬兰、法国、德国、希腊、匈牙利、爱尔兰、意大利、拉脱维亚、立陶宛、卢森堡、马耳他、荷兰、波兰、葡萄牙、罗马尼亚、斯洛伐克、斯洛文尼亚、西班牙、瑞典)。英国、瑞士、挪威等非欧盟国家照常销售 |
+| 欧盟商家身份(DSA) | 暂不填写。在欧盟上架前需要声明为“商家”,并公开经过验证的地址、电话和邮箱;准备好后填写并把欧盟加回销售范围即可 |
 | 类别 | 主类别:工具(Utilities) |
 | 隐私政策网址 | `https://hushpass.fyi/privacy/`(英文:`https://hushpass.fyi/en/privacy/`) |
 | App 隐私(数据收集) | 选择 **“不收集数据”** |

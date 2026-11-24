@@ -21,18 +21,26 @@ gh auth status >/dev/null 2>&1 || { echo "error: run 'gh auth login' first" >&2;
 read -r -s -p "Password of $(basename "$P12"): " P12_PASSWORD; echo
 export P12_PASSWORD  # openssl reads it from the environment, never from the command line
 
-# Read the certificate out of the .p12 to check it and to get the exact identity name.
-CERT=$(openssl pkcs12 -in "$P12" -nokeys -clcerts -passin env:P12_PASSWORD 2>/dev/null \
-    || openssl pkcs12 -legacy -in "$P12" -nokeys -clcerts -passin env:P12_PASSWORD 2>/dev/null) \
-    || { echo "error: could not open the .p12 (wrong password?)" >&2; exit 1; }
+# Keychain Access exports .p12 files with legacy encryption, which OpenSSL 3 only reads with
+# -legacy; try the modern format first, then the legacy one.
+p12() {
+    openssl pkcs12 -in "$P12" -passin env:P12_PASSWORD "$@" 2>/dev/null \
+        || openssl pkcs12 -legacy -in "$P12" -passin env:P12_PASSWORD "$@" 2>/dev/null
+}
+
+# Check in order: the password opens the file, it holds a private key, and the certificate
+# that belongs to that key is a Developer ID Application certificate.
+p12 -nokeys >/dev/null || { echo "error: could not open the .p12 (wrong password?)" >&2; exit 1; }
+KEYS=$(p12 -nocerts -nodes || true)
+[[ "$KEYS" == *"PRIVATE KEY-----"* ]] || { echo "error: the .p12 has no private key; export the certificate row (not the key row) so the key is included" >&2; exit 1; }
+unset KEYS
+CERT=$(p12 -nokeys -clcerts || true)
+[[ "$CERT" == *"BEGIN CERTIFICATE"* ]] || { echo "error: no certificate in the .p12 matches its private key" >&2; exit 1; }
 SUBJECT=$(printf '%s\n' "$CERT" | openssl x509 -noout -subject -nameopt utf8,sep_multiline)
 IDENTITY=$(printf '%s\n' "$SUBJECT" | sed -n 's/^ *CN=//p')
 TEAM_ID=$(printf '%s\n' "$SUBJECT" | sed -n 's/^ *OU=//p' | head -1)
 EXPIRES=$(printf '%s\n' "$CERT" | openssl x509 -noout -enddate | cut -d= -f2)
 [[ "$IDENTITY" == "Developer ID Application:"* ]] || { echo "error: this is not a Developer ID Application certificate: $IDENTITY" >&2; exit 1; }
-KEY_COUNT=$(openssl pkcs12 -in "$P12" -nocerts -nodes -passin env:P12_PASSWORD 2>/dev/null | grep -c "PRIVATE KEY-----" \
-    || openssl pkcs12 -legacy -in "$P12" -nocerts -nodes -passin env:P12_PASSWORD 2>/dev/null | grep -c "PRIVATE KEY-----" || true)
-[[ "${KEY_COUNT:-0}" -ge 2 ]] || { echo "error: the .p12 has no private key; export the certificate together with its key" >&2; exit 1; }
 
 # The key ID is part of the file name Apple gives the download (AuthKey_<KEYID>.p8).
 KEY_ID=$(basename "$P8" .p8); KEY_ID=${KEY_ID#AuthKey_}

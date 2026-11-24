@@ -16,6 +16,7 @@ REPO=${REPO:-08820048/hush}
 [[ -f "$P8" ]] || { echo "error: $P8 not found" >&2; exit 1; }
 command -v gh >/dev/null || { echo "error: GitHub CLI (gh) is required" >&2; exit 1; }
 gh auth status >/dev/null 2>&1 || { echo "error: run 'gh auth login' first" >&2; exit 1; }
+[[ -t 0 ]] || { echo "error: run this in a Terminal window: it asks for the .p12 password, which must not be piped or passed as an argument" >&2; exit 1; }
 
 read -r -s -p "Password of $(basename "$P12"): " P12_PASSWORD; echo
 export P12_PASSWORD  # openssl reads it from the environment, never from the command line

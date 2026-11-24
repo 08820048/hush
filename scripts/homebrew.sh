@@ -1,6 +1,6 @@
 #!/bin/bash
 # Fills the Homebrew templates with a release's version and checksums.
-# Usage: scripts/homebrew.sh <version> [path/to/SHA256SUMS.txt]
+# Usage: [SIGNED=true] scripts/homebrew.sh <version> [path/to/SHA256SUMS.txt]
 # Without a path, SHA256SUMS.txt is downloaded from the GitHub release.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -20,5 +20,9 @@ CLI_SHA=$(awk -v f="hush-cli-$VERSION.zip" '$2 ~ f {print $1}' "$SUMS")
 OUT=packaging/homebrew/out
 mkdir -p "$OUT"
 sed -e "s/{{VERSION}}/$VERSION/g" -e "s/{{APP_SHA256}}/$APP_SHA/g" packaging/homebrew/hush.rb.template > "$OUT/hush.rb"
+# Signed and notarized builds open without warnings, so drop the "not signed yet" caveat.
+if [[ "${SIGNED:-false}" == true ]]; then
+    perl -0pi -e 's/\n\n  caveats <<~EOS.*?\n  EOS\n/\n/s' "$OUT/hush.rb"
+fi
 sed -e "s/{{VERSION}}/$VERSION/g" -e "s/{{CLI_SHA256}}/$CLI_SHA/g" packaging/homebrew/hush-cli.rb.template > "$OUT/hush-cli.rb"
 echo "Wrote $OUT/hush.rb and $OUT/hush-cli.rb"

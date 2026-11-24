@@ -1,6 +1,6 @@
 class HushCli < Formula
   desc "Password generator CLI that shares Hush's generator core"
-  homepage "https://github.com/08820048/hush"
+  homepage "https://hushpass.fyi"
   url "https://github.com/08820048/hush/releases/download/v{{VERSION}}/hush-cli-{{VERSION}}.zip"
   version "{{VERSION}}"
   sha256 "{{CLI_SHA256}}"

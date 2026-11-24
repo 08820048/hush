@@ -1,6 +1,6 @@
 # 发布流程
 
-Hush 通过**版本标签**自动发布:推送 `v*.*.*` 标签后,GitHub Actions 会自动测试、构建并创建 GitHub Release。目前的版本**不签名、不公证**(免费开源项目,暂不使用 Apple 开发者证书),Release 说明里会告诉用户如何打开。
+Hush 通过**版本标签**自动发布:推送 `v*.*.*` 标签后,GitHub Actions 会自动测试、构建并创建 GitHub Release。配置好签名密钥后(见下文“签名与公证”),App 和命令行工具会用 Developer ID 签名并经 Apple 公证,用户打开时不会被拦截;没有配置时发布未签名版本,Release 说明会告诉用户如何打开。Mac App Store 版另见 [APPSTORE.md](APPSTORE.md)。
 
 ## 每次发布
 
@@ -45,10 +45,25 @@ brew install 08820048/tap/hush-cli        # 命令行工具
 make release          # 产物在 dist/,与 CI 相同
 ```
 
-## 以后启用签名和公证
+## 签名与公证
 
-`scripts/release.sh` 已经支持 Developer ID 签名、公证和 staple:设置 `DEVELOPER_ID`、`TEAM_ID`,以及 `NOTARY_PROFILE`(本机,用 `xcrun notarytool store-credentials` 创建)或 `NOTARY_KEY_PATH`/`NOTARY_KEY_ID`/`NOTARY_ISSUER`(App Store Connect API Key)。启用时还需要:
+GitHub 版用 **Developer ID Application** 证书签名,并用 App Store Connect API 密钥提交 Apple 公证。只需设置一次:
 
-- Bundle ID 已是 `fyi.hushpass.Hush`,在 Apple Developer 后台注册同名 App ID 即可。
-- 在 Release 工作流中加入导入证书的步骤,并把上面的变量传给 `scripts/release.sh`。
-- 删除 Release 说明和 Homebrew cask 中"尚未签名"的提示。
+1. **导出证书(.p12)**:打开“钥匙串访问” › 登录 › 我的证书,找到 “Developer ID Application: Yi Xu (9XAXTT7H29)”。有多张同名证书时,选**到期日最晚**的那张(2031-05-30,SHA-1 以 `B5B549B0` 开头;双击可查看)。展开确认它下面带有私钥,右键 › 导出,格式选 .p12,设置一个导出密码。
+2. **创建公证用的 API 密钥(.p8)**:App Store Connect › 用户和访问 › 集成 › App Store Connect API › 团队密钥 › “+”,名称如 `Hush notarization`,访问权限选 **Developer**。下载 `AuthKey_<密钥ID>.p8`(**只能下载一次**),记下页面上方的 **Issuer ID**。
+3. **写入 GitHub Secrets**(在本机运行,密码只在终端里输入):
+
+   ```sh
+   scripts/setup-signing-secrets.sh ~/Downloads/DeveloperID.p12 ~/Downloads/AuthKey_XXXXXXXXXX.p8
+   ```
+
+   脚本会检查证书和私钥、读出签名身份和 Team ID,确认后通过 `gh secret set` 写入 7 个密钥。完成后可以删除或妥善保管这两个文件。
+
+之后推送版本标签,Release 工作流会自动签名、公证并 staple;Release 说明和 Homebrew cask 也会自动换成“已签名”的版本。
+
+**在本机签名发布**:钥匙串里有多张同名证书时,按名称签名会报“ambiguous”,改用证书的 SHA-1:
+
+```sh
+xcrun notarytool store-credentials hush-notary --key ~/Downloads/AuthKey_XXXXXXXXXX.p8 --key-id XXXXXXXXXX --issuer <Issuer ID>
+DEVELOPER_ID=B5B549B0DE0CDF5F843A2756EFE5CCE412D2CF43 TEAM_ID=9XAXTT7H29 NOTARY_PROFILE=hush-notary make release
+```

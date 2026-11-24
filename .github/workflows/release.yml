@@ -10,8 +10,15 @@ name: Release
 # Tags with a suffix (v0.2.0-beta.1) become pre-releases.
 # "Run workflow" on the Actions tab builds a version without publishing it (a dry run).
 #
-# Builds are not signed with a Developer ID or notarized yet. The release notes explain how
-# to open the app anyway. Signing support is already in scripts/release.sh (docs/RELEASING.md).
+# Signing (optional): with these repository secrets the app and CLI are signed with Developer ID,
+# notarized and stapled, so macOS opens them without warnings. Without them the release is built
+# ad-hoc and the notes explain how to open it. scripts/setup-signing-secrets.sh sets them.
+#   DEVELOPER_ID_P12          base64 of the "Developer ID Application" certificate + key (.p12)
+#   DEVELOPER_ID_P12_PASSWORD password of that .p12
+#   DEVELOPER_ID              "Developer ID Application: Name (TEAMID)"
+#   TEAM_ID                   10-character team ID
+#   NOTARY_KEY_P8             base64 of an App Store Connect API key (.p8)
+#   NOTARY_KEY_ID / NOTARY_ISSUER   that key's ID and issuer ID
 #
 # Optional: set the HOMEBREW_TAP_TOKEN secret (a token with write access to
 # 08820048/homebrew-tap) to update the Homebrew tap after each stable release.
@@ -42,6 +49,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       prerelease: ${{ steps.version.outputs.prerelease }}
+      signed: ${{ steps.signing.outputs.signed }}
     steps:
       - uses: actions/checkout@v7
 
@@ -74,10 +82,48 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Test and build
+      - name: Import signing certificate
+        id: signing
+        env:
+          P12: ${{ secrets.DEVELOPER_ID_P12 }}
+          P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+        run: |
+          if [ -z "$P12" ] || [ -z "$NOTARY_KEY_P8" ]; then
+            echo "No signing secrets: building an ad-hoc release."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(openssl rand -hex 16)"
+          echo "$P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null
+          # Word splitting is intended: append the existing keychains to the search list.
+          # shellcheck disable=SC2046
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/cert.p12"
+          echo "$NOTARY_KEY_P8" | base64 --decode > "$RUNNER_TEMP/AuthKey.p8"
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Test, build, sign and notarize
         env:
           BUILD_NUMBER: ${{ github.run_number }}
+          DEVELOPER_ID: ${{ steps.signing.outputs.signed == 'true' && secrets.DEVELOPER_ID || '' }}
+          TEAM_ID: ${{ steps.signing.outputs.signed == 'true' && secrets.TEAM_ID || '' }}
+          NOTARY_KEY_PATH: ${{ steps.signing.outputs.signed == 'true' && format('{0}/AuthKey.p8', runner.temp) || '' }}
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER: ${{ secrets.NOTARY_ISSUER }}
         run: scripts/release.sh "${{ steps.version.outputs.version }}"
+
+      - name: Remove signing keychain
+        if: always() && steps.signing.outputs.signed == 'true'
+        run: |
+          security delete-keychain "$RUNNER_TEMP/signing.keychain-db" || true
+          rm -f "$RUNNER_TEMP/AuthKey.p8"
 
       - name: Upload build
         uses: actions/upload-artifact@v7
@@ -107,6 +153,7 @@ jobs:
       - name: Write release notes
         env:
           VERSION: ${{ needs.build.outputs.version }}
+          SIGNED: ${{ needs.build.outputs.signed }}
         run: |
           PREVIOUS=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)
           if [ -n "$PREVIOUS" ]; then
@@ -133,6 +180,27 @@ jobs:
           | \`hush-cli-$VERSION.zip\` | The \`hush\` command-line tool. |
           | \`SHA256SUMS.txt\` | Checksums. Verify with \`shasum -a 256 -c SHA256SUMS.txt\`. |
 
+          EOF
+            if [ "$SIGNED" = "true" ]; then
+              cat <<EOF
+          ## Installing
+
+          Unzip and move **Hush.app** to Applications, then open it. The app and the CLI are signed with Apple Developer ID and notarized by Apple, so macOS opens them without warnings.
+
+          To install the CLI: unzip, then \`mv hush /usr/local/bin/\` (or anywhere on your PATH).
+
+          ## Updating
+
+          Hush never goes online, so it does not update itself. Quit Hush and replace Hush.app in Applications with the new one; settings and presets are kept. **Check for Updates…** in the menu opens this page. With Homebrew: \`brew upgrade --cask hush\`.
+
+          ## 安装
+
+          解压后把 **Hush.app** 移到"应用程序"文件夹,直接打开即可。App 与命令行工具都已使用 Apple Developer ID 签名并经过 Apple 公证,macOS 不会拦截。
+
+          **更新:** Hush 从不联网,不会自动更新。退出 Hush,用新版本替换"应用程序"中的 Hush.app 即可,设置和预设都会保留。菜单中的"检查更新…"会打开本页面。Homebrew 用户运行 \`brew upgrade --cask hush\`。
+          EOF
+            else
+              cat <<EOF
           ## Opening the app (not signed yet)
 
           Hush is a free, open-source project and these builds are not signed with an Apple Developer ID yet, so macOS blocks the first launch.
@@ -161,6 +229,7 @@ jobs:
 
           **更新:** Hush 从不联网,不会自动更新。退出 Hush,用新版本替换"应用程序"中的 Hush.app 即可,设置和预设都会保留。菜单中的"检查更新…"会打开本页面。Homebrew 用户运行 \`brew upgrade --cask hush\`。
           EOF
+            fi
           } > notes.md
           cat notes.md
 
@@ -216,6 +285,8 @@ jobs:
 
       - name: Fill formulae
         if: steps.token.outputs.present == 'true'
+        env:
+          SIGNED: ${{ needs.build.outputs.signed }}
         run: scripts/homebrew.sh "${{ needs.build.outputs.version }}" dist/SHA256SUMS.txt
 
       - uses: actions/checkout@v7
